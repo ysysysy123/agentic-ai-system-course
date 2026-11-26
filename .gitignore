@@ -2,5 +2,11 @@
 **/.DS_Store
 /docs/
 /questions/
-/workspace/
+/workspace/*
+!/workspace/deskbot-learning/
+/workspace/deskbot-learning/*
+!/workspace/deskbot-learning/syllabus.md
+!/workspace/deskbot-learning/source-map.md
+!/workspace/deskbot-learning/improvement-roadmap.md
+!/workspace/deskbot-learning/ai-authoring-guide.md
 /references/

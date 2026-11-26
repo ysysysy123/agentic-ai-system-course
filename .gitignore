@@ -9,4 +9,16 @@
 !/workspace/deskbot-learning/source-map.md
 !/workspace/deskbot-learning/improvement-roadmap.md
 !/workspace/deskbot-learning/ai-authoring-guide.md
+!/workspace/deskbot-learning/HANDOFF.md
+!/workspace/deskbot-learning/AUTHORING_STATUS.md
+!/workspace/deskbot-learning/index.html
+!/workspace/deskbot-learning/progress.md
+!/workspace/deskbot-learning/assets/
+!/workspace/deskbot-learning/lessons/
+!/workspace/deskbot-learning/exercises/
+!/workspace/deskbot-learning/scripts/
+/workspace/deskbot-learning/**/__pycache__/
+/workspace/deskbot-learning/**/.pytest_cache/
+/workspace/deskbot-learning/**/outputs/
+/workspace/deskbot-learning/**/*.pyc
 /references/

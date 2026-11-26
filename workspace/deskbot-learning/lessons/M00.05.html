@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dk:lesson" content="M00.05">
+<meta name="dk:module" content="M00">
+<meta name="dk:home" content="../index.html">
+<meta name="dk:date" content="2026-11-26">
+<title>M00.05 模块导入、JSON/YAML 配置与你的第一个 pytest 单元测试 · Deskbot 学习室</title>
+<link rel="stylesheet" href="../assets/deskbot-course.css">
+</head>
+<body>
+<div class="dk-layout">
+  <nav id="dk-toc" aria-label="本课目录"></nav>
+
+  <main class="dk-main">
+    <header class="dk-hero">
+      <div class="crumbs">
+        <a href="../index.html">📚 38课学习地图</a> /
+        <a href="../index.html#M00">M00 · 零基础破冰与最小够用 Python</a> /
+        <span>M00.05</span>
+      </div>
+      <p class="eyebrow">M00.05 · 阶段 0 收官课（基石 + 灰盒读懂配置体系）</p>
+      <h1>模块导入、JSON/YAML 配置与你的第一个 <code>pytest</code> 单元测试</h1>
+      <p class="subtitle">怎样把代码拆成干净的多文件工程、搞清 4 层配置谁覆盖谁，并用自动化测试一秒证明你的代码没写坏？</p>
+      <div class="chips">
+        <span class="chip whitebox">🏁 M00 收官课</span>
+        <span class="chip greybox">🧭 灰盒掌握 config / environment</span>
+        <span class="chip sim">🧪 含 4 层配置优先级实验台 + pytest 实战</span>
+        <span class="chip">⏱ 约 25 分钟</span>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">🎯</div>
+      <div>
+        <h4>本课唯一核心收获</h4>
+        <p>掌握跨文件 <code>import</code>、JSON 文本序列化（<code>json.loads / dumps</code>）、Deskbot 的 <strong>4 层配置覆盖规则</strong>，并亲手跑绿你的第一组 <strong><code>pytest</code> 单元测试</strong>——正式具备进入阶段 1（<code>M01</code> Agent 大脑精读与重构）的全部前置战力！</p>
+      </div>
+    </div>
+
+    <div class="prereq">
+      <b>前置检查：</b>
+      <span class="known">✓ 已掌握：变量类型、字典列表、循环、函数与 try/except（M00.01–M00.04）</span> ·
+      <span class="gap">△ 本课从零拆解：import 模块、str vs bytes、JSON 序列化、YAML/.env 优先级、assert 与 pytest</span>
+    </div>
+
+    <!-- ========== §01 问题引入 ========== -->
+    <section>
+      <h2><span class="num">01</span>问题引入：为什么真实工程绝不把代码、密钥和测试全塞进一个文件？</h2>
+      <p>玩具脚本可以把所有东西堆在 100 行里；但像 Deskbot 这样的生产级项目有 40 个源码文件和 41 个测试文件，必须解决三件事：</p>
+      <ol>
+        <li><strong>多文件协作（<code>import</code>）：</strong>让 <code>runner.py</code> 能干净借用 <code>tools.py</code> 里写好的函数。</li>
+        <li><strong>跨网络/跨语言传数据（JSON）与安全配密钥（YAML + <code>.env</code>）：</strong>大模型发来的工具参数是一串 JSON 文本，需要转成 Python 字典；而 API Key 绝对不能写进公开的 <code>config.yaml</code>，必须通过本地私有的 <code>.env</code> 或环境变量注入。</li>
+        <li><strong>自动化回归防线（<code>pytest</code>）：</strong>改完一行代码后，不需要每次对着麦克风喊十遍来测试，敲一行 <code>pytest</code> 命令，0.01 秒就能自动核对几百个边界条件！</li>
+      </ol>
+    </section>
+
+    <!-- ========== §02 零基础语法拆桥 ========== -->
+    <section>
+      <h2><span class="num">02</span>零基础拆桥：JSON 往返转换、模块导入与 <code>pytest</code> 断言</h2>
+
+      <h3>拆桥 1：JSON 文本字符串 ↔ Python 字典（<code>json.loads</code> 与 <code>json.dumps</code>）</h3>
+      <aside class="sidenote">
+        <strong>顺手记清 <code>str</code> 与 <code>bytes</code>：</strong><code>str</code> 是人类读的文本（如 <code>"你好"</code>）；在网络 WebSocket 上传输音频或发数据包时，底层飞奔的是字节 <code>bytes</code>（文本用 <code>.encode("utf-8")</code> 变字节，字节用 <code>.decode("utf-8")</code> 变回文本）。
+      </aside>
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 极简日常小例子</span>
+          <pre data-file="JSON 与 Python 字典"><code class="language-python">import json
+
+# 1. loads (load string)：把 JSON 格式的字符串解析成 Python 字典
+raw_str = '{"brightness": 75, "auto": true}'
+data = json.loads(raw_str)
+print(data["brightness"], data["auto"])  # 输出: 75 True (自动变成了 Python 的 True!)
+
+# 2. dumps (dump string)：把 Python 字典打包成 JSON 字符串
+# 务必加 ensure_ascii=False，否则中文会被转成难读的 \u4f60\u597d！
+reply = json.dumps({"success": True, "msg": "已调亮"}, ensure_ascii=False)</code></pre>
+          <p class="small"><strong>高频防坑：</strong>合法的 JSON 字符串不一定解出来都是字典！比如 <code>json.loads("[1, 2, 3]")</code> 解出来是列表 <code>list</code>，所以 Deskbot 源码里总会多加一句 <code>if not isinstance(arguments, dict)</code>。</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · Deskbot 真实源码写法</span>
+          <pre data-file="src/voice_server/camera_dialogue.py" data-start="430"><code class="language-python">    @staticmethod
+    def _text(value: dict[str, Any]) -&gt; str:
+        return json.dumps(value, ensure_ascii=False)</code></pre>
+          <p class="small"><code>camera_dialogue.py</code> 最底部的辅助方法 <code>_text</code> 正是封装了 <code>ensure_ascii=False</code>，保证回传给大模型的中文提示清晰直观。</p>
+        </div>
+      </div>
+
+      <h3>拆桥 2：<code>pytest</code> 自动化测试——函数名以 <code>test_</code> 开头 + 一句 <code>assert</code></h3>
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 你的第一个测试函数有多简单？</span>
+          <pre data-file="test_demo.py"><code class="language-python"># pytest 会自动扫描所有 test_*.py 文件里的 test_* 函数并执行
+def test_addition():
+    actual = 65 + int("10")
+    assert actual == 75  # 断言：如果右边为真就静默通过(PASSED)，为假就标红打印左右两边的值！</code></pre>
+          <p class="small">完全不需要复杂的类模板！只要写一个普通函数叫 <code>test_xxx</code>，里面用 <code>assert 实际结果 == 预期结果</code>，<code>pytest</code> 就会帮你自动运行并生成清晰报告。</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · Deskbot 真实配置测试（连“必须报错”都能测！）</span>
+          <pre data-file="tests/test_config.py" data-start="32"><code class="language-python">def test_non_loopback_admin_requires_token(tmp_path: Path):
+    path = tmp_path / "config.yaml"
+    path.write_text("admin_api:\n  host: 0.0.0.0\n", encoding="utf-8")
+    with pytest.raises(ConfigError, match="memory admin token"):
+        load_config(path, {})</code></pre>
+          <p class="small"><code>tmp_path</code> 是 <code>pytest</code> 自动提供的干净临时文件夹（测完自动清理，绝不弄脏真实配置！）；<code>with pytest.raises(ConfigError)</code> 则专门验证“这种危险配置必须被程序当场拦下来报错才算合格”！</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §03 交互实验台：4 层配置覆盖优先级实时计算器 ========== -->
+    <section>
+      <h2><span class="num">03</span>动手实验台：亲手拨动开关，看懂 Deskbot 的 4 层配置覆盖铁律</h2>
+      <p>在实际开发中，你经常会遇到<em>“明明改了 config.yaml，为什么端口或模型还是旧的？”</em>。答案就在 <code>config.py</code> 的 4 层优先级里：<strong>终端导出的环境变量 &gt; <code>.env</code> 文件 &gt; <code>config.yaml</code> &gt; 代码默认值</strong>。拨动下方选项实时观察谁最终胜出：</p>
+
+      <div id="pg-config"></div>
+    </section>
+
+    <!-- ========== §04 真实源码走读 ========== -->
+    <section>
+      <h2><span class="num">04</span>灰盒走读：<code>__main__.py</code> 与 <code>environment.py</code> 是如何配合的？</h2>
+      <p>配置模块属于我们规划中的<strong>🧭 灰盒模块</strong>——不需要你背诵全部 400 行字段校验细节，只需抓牢下面两处核心机制，以后遇到任何配置不生效问题都能 30 秒定位：</p>
+
+      <div class="dk-tabs">
+        <div class="tab" data-label="1 · environment.py（22 行实现“系统环境优先于 .env”）">
+          <div class="code-walk" data-dim>
+<pre data-file="src/voice_server/environment.py" data-start="9"><code class="language-python">def read_environment(path: Path) -&gt; dict[str, str]:
+    # Keep values literal, including credentials containing dollar signs.
+    return {
+        key: value
+        for key, value in dotenv_values(path, encoding="utf-8-sig", interpolate=False).items()
+        if value is not None
+    }
+
+
+def load_environment(path: Path) -&gt; dict[str, str]:
+    values = read_environment(path)
+    for key, value in values.items():
+        os.environ.setdefault(key, value)
+    return values</code></pre>
+            <ol class="walk">
+              <li data-lines="9-15"><strong>只读字典推导式</strong>：读取 <code>.env</code> 文件里的键值对，<code>interpolate=False</code> 防止密码里恰好含有美元符号 <code>$</code> 时被误当成变量展开篡改！</li>
+              <li data-lines="20-21"><strong>点睛之笔 <code>setdefault</code></strong>：<code>os.environ.setdefault(key, value)</code> 的意思是——<em>“只有当系统环境里还没有这个变量时，才填入 .env 的值；如果终端已经提前 export 了同名变量，保留终端的值不动！”</em></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tab" data-label="2 · __main__.py（服务启动总入口与退出码约定）">
+          <div class="code-walk" data-dim>
+<pre data-file="src/voice_server/__main__.py" data-start="21"><code class="language-python">def main(argv: Sequence[str] | None = None) -&gt; int:
+    parser = argparse.ArgumentParser(description="Xiaozhi voice server")
+    parser.add_argument("--config", type=Path, default=Path("config.yaml"))
+    arguments = parser.parse_args(argv)
+    logging.basicConfig(level=logging.INFO)
+    try:
+        config = load_config(arguments.config)
+        application = ServerApplication.from_config(config)
+    except ConfigError:
+        logging.getLogger(__name__).error("invalid voice server configuration")
+        return 2
+    try:
+        asyncio.run(run_application(application))
+    except KeyboardInterrupt:
+        return 130
+    return 0</code></pre>
+            <ol class="walk">
+              <li data-lines="22-24"><strong>解析 <code>--config</code> 参数</strong>：支持在命令行传入自定义配置文件路径，不传则默认找当前目录下的 <code>config.yaml</code>。</li>
+              <li data-lines="26-31"><strong>启动前快速失败（Fail-Fast）</strong>：一旦配置有误抛出 <code>ConfigError</code>，干净打印一条错误日志并返回退出码 <code>2</code>，绝不带着半残配置勉强启动服务。</li>
+              <li data-lines="32-36"><strong>优雅处理 <code>Ctrl+C</code></strong>：你在终端按 <code>Ctrl+C</code> 停止服务时会触发 <code>KeyboardInterrupt</code>，程序捕获后返回 Linux 标准中断码 <code>130</code>，不刷满屏吓人的报错堆栈。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §05 本地动手实验 ========== -->
+    <section>
+      <h2><span class="num">05</span>本地动手实验：亲手跑绿你的第一套多文件 <code>pytest</code> 测试！</h2>
+      <p>在 <code>exercises/M00.05/</code> 下，我们已经把代码规范地拆成了三个文件：<code>tools.py</code>（工具注册）、<code>runner.py</code>（JSON 解析执行）和 <code>test_runner.py</code>（4 条自动化测试）。直接调用项目虚拟环境的 <code>pytest</code> 运行它：</p>
+
+      <div class="terminal-lab">
+        <div class="term-head">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span>工作目录：/mnt/study/github/agentic-ai-system-course</span>
+        </div>
+        <div class="term-body">
+          <div class="cmd-row">
+            <span class="cmd-text">/home/yyy/desktop/ai/Deskbot/server/voice/.venv/bin/pytest workspace/deskbot-learning/exercises/M00.05/test_runner.py -v</span>
+            <button class="copy-cmd" type="button">复制命令</button>
+          </div>
+          <div class="term-out">collected 4 items
+
+workspace/deskbot-learning/exercises/M00.05/test_runner.py::test_valid_model_tool_call_succeeds PASSED [ 25%]
+workspace/deskbot-learning/exercises/M00.05/test_runner.py::test_broken_json_returns_structured_error PASSED [ 50%]
+workspace/deskbot-learning/exercises/M00.05/test_runner.py::test_non_dict_json_is_rejected PASSED [ 75%]
+workspace/deskbot-learning/exercises/M00.05/test_runner.py::test_unknown_tool_is_rejected PASSED [100%]
+
+============================== 4 passed in 0.01s ===============================</div>
+        </div>
+      </div>
+
+      <div class="callout lab">
+        <span class="ct">阶段 0 毕业小挑战（亲手写下你的第 5 条测试！）</span>
+        <ol>
+          <li>打开 <code>workspace/deskbot-learning/exercises/M00.05/test_runner.py</code>，在文件末尾新写一个测试函数 <code>def test_out_of_range_brightness_fails():</code>。</li>
+          <li>在里面调用 <code>execute_raw_call("device_self_screen_set_brightness", '{"brightness": 200}')</code>，用 <code>json.loads</code> 解开返回字符串，断言 <code>data["success"] is False</code> 且 <code>"0..100" in data["error"]</code>，再跑一次 <code>pytest</code> 看到 <strong><code>5 passed</code></strong>！</li>
+        </ol>
+      </div>
+
+      <details class="reveal hint">
+        <summary>卡住了？点开查看分层提示</summary>
+        <p><strong>提示 1：</strong>直接复制上面的 <code>test_valid_model_tool_call_succeeds</code> 改函数名和参数即可，注意缩进对齐 4 个空格。</p>
+        <p><strong>提示 2：</strong>你还可以故意把断言写成 <code>assert data["success"] is True</code> 跑一次，亲眼看看 <code>pytest</code> 标红指出哪一行断言失败的清晰报告，然后再改回 <code>False</code>！</p>
+      </details>
+
+      <details class="reveal deep">
+        <summary>第 5 条测试参考写法</summary>
+        <pre data-file="exercises/M00.05/test_runner.py（新增函数）"><code class="language-python">def test_out_of_range_brightness_fails():
+    raw_out = execute_raw_call("device_self_screen_set_brightness", '{"brightness": 200}')
+    data = json.loads(raw_out)
+    assert data["success"] is False
+    assert "0..100" in data["error"]</code></pre>
+      </details>
+    </section>
+
+    <!-- ========== §06 小结与面试表达 ========== -->
+    <section>
+      <h2><span class="num">06</span>阶段 0 收官浓缩与面试表达</h2>
+      <div class="callout summary">
+        <span class="ct">恭喜走完 M00！你已经攒齐了读懂 Agent 核心的 4 把钥匙</span>
+        <ul>
+          <li><strong>消息载体：</strong><code>list[dict]</code> 表达上下文消息，<code>json.loads / dumps</code> 负责网络/工具参数字符串与字典互转。</li>
+          <li><strong>控制骨架：</strong>有界 <code>for</code> 循环防死锁，函数 <code>def</code> 定契约，<code>try/except</code> 把异常转化为结构化错误返回。</li>
+          <li><strong>配置与验证：</strong>4 层配置优先级（<code>Exported Env &gt; .env &gt; YAML &gt; Default</code>）隔离代码与密钥，<code>pytest</code> 提供毫秒级离线验证。</li>
+        </ul>
+      </div>
+
+      <div class="callout interview">
+        <span class="ct">工程规范意识 · 面试回答加分项</span>
+        <p>「在配置与密钥管理上，Deskbot 严格把结构化默认参数（<code>config.yaml</code>）与敏感凭证（<code>.env</code> / <code>VOICE_*</code> 环境变量）分离，并在启动阶段通过 <code>load_config</code> 做全量 Schema 与安全不变量校验（例如管理接口若绑定在非本机回环地址 <code>0.0.0.0</code> 且未配 Token 会直接触发 <code>ConfigError</code> 拒绝启动），把配置事故拦截在流量进来之前。」</p>
+      </div>
+    </section>
+
+    <!-- ========== §07 自测与讲回验收 ========== -->
+    <section>
+      <h2><span class="num">07</span>自测与 M00 阶段通关验收</h2>
+
+      <details class="reveal q">
+        <summary>可选快测：3 道配置与 JSON 边界题</summary>
+        <form class="dk-quiz">
+          <fieldset data-name="q1" data-answer="c" data-explain="优先级顺序为：终端已导出的环境变量 (9000) > .env (8500) > config.yaml (8100) > 代码默认值 (8000)。">
+            <legend>1. 代码默认端口是 <code>8000</code>，<code>config.yaml</code> 写了 <code>8100</code>，<code>.env</code> 写了 <code>VOICE_SERVER_WS_PORT=8500</code>，启动前你在终端又执行了 <code>export VOICE_SERVER_WS_PORT=9000</code>。最终生效端口是哪个？</legend>
+            <label class="q-opt"><input type="radio" name="q1" value="a"> A. 8100（YAML 优先）</label>
+            <label class="q-opt"><input type="radio" name="q1" value="b"> B. 8500（.env 优先）</label>
+            <label class="q-opt"><input type="radio" name="q1" value="c"> C. 9000（进程导出的环境变量优先级最高）</label>
+          </fieldset>
+
+          <fieldset data-name="q2" data-answer="b" data-explain="'[1, 2, 3]' 是完全合法的 JSON 数组，json.loads 不会报错，但返回的是 list 而不是 dict；如果不检查 isinstance(parsed, dict)，后面 **parsed 解包时就会崩溃！">
+            <legend>2. 为什么 <code>json.loads(raw_arguments)</code> 成功后，还要再写一句 <code>if not isinstance(parsed, dict):</code>？</legend>
+            <label class="q-opt"><input type="radio" name="q2" value="a"> A. 多此一举，<code>json.loads</code> 永远只返回字典</label>
+            <label class="q-opt"><input type="radio" name="q2" value="b"> B. 因为 <code>"[1, 2]"</code> 或 <code>"123"</code> 也是合法 JSON，解出来是列表或整数而非字典，不能用 <code>**parsed</code> 传给工具函数</label>
+            <label class="q-opt"><input type="radio" name="q2" value="c"> C. 为了把字典转成字符串</label>
+          </fieldset>
+
+          <fieldset data-name="q3" data-answer="a" data-explain="单元测试通过证明代码分支、协议格式与异常兜底符合预期；但真实大模型的提示词遵循效果、语音识别准确率仍需在后续阶段用真实 Eval 套件测量。">
+            <legend>3. 跑通了全部离线 <code>pytest</code> 测试后，我们能下什么准确结论？</legend>
+            <label class="q-opt"><input type="radio" name="q3" value="a"> A. 证明代码逻辑、参数校验与异常分支工作正常；真实模型的回答与语音质量还需后续用 Eval 评测集单独测量</label>
+            <label class="q-opt"><input type="radio" name="q3" value="b"> B. 证明真实麦克风在嘈杂环境下也 100% 识别准确</label>
+            <label class="q-opt"><input type="radio" name="q3" value="c"> C. 离线测试没有任何意义</label>
+          </fieldset>
+          <button class="dk-btn primary" type="submit">核对判断与解析</button>
+        </form>
+      </details>
+
+      <div class="teachback-card" data-teachback>
+        <h3>📝 M00.05 阶段通关讲回草稿箱</h3>
+        <label class="tb-field">
+          1. 假设你以后改了 <code>config.yaml</code> 里的模型名字，启动服务发现没生效，你会按哪几层顺序去排查是谁覆盖了它？
+          <textarea data-field="cfg_order" placeholder="按优先级从高到低写出来…"></textarea>
+        </label>
+        <label class="tb-field">
+          2. 你自己补写的第 5 条测试 <code>test_out_of_range_brightness_fails</code> 跑出 <code>5 passed</code> 了吗？贴一下你的测试代码或运行感受：
+          <textarea data-field="pytest_win" placeholder="把你写的几行 test 函数贴在这里，发给 AI 老师验收整个 M00 阶段！"></textarea>
+        </label>
+        <div class="tb-actions">
+          <button class="dk-btn primary" type="button" data-copy-teachback>📋 一键复制我的回答发给 AI 老师验收（解锁 M01！）</button>
+          <span class="tb-status">草稿会自动保存在当前浏览器本地。</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="dk-nav" aria-label="课程前后导航">
+      <a href="M00.04.html"><small>← 上一课 · M00.04</small>循环、函数与异常——写出最小模拟工具调度器</a>
+      <div class="nav-placeholder next"><small>下一阶段（待生成 · Batch 1）· M01.01</small>类、dataclass 与 Protocol——读懂 DialogueBackend 解耦契约</div>
+    </nav>
+
+    <div class="ask-ai">
+      💬 完成 M00 后直接说：<code>验收 M00 全阶段</code> · <code>生成 Batch 1（M01.01–M01.08）课件</code>
+    </div>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · M00.05 · 核对日期 2026-11-26</span>
+      <span><a href="../syllabus.md">课程大纲</a> · <a href="../source-map.md">源码地图</a></span>
+    </footer>
+  </main>
+
+  <aside class="dk-margin" aria-hidden="true"></aside>
+</div>
+
+<script src="../assets/deskbot-course.js"></script>
+<script>
+DeskCourse.ready(() => {
+  DeskCourse.playground("#pg-config", {
+    title: "Deskbot 四层配置优先级与安全守门模拟器",
+    selects: [
+      {
+        name: "yamlPort",
+        label: "① config.yaml 中的 server.ws_port",
+        options: [["none", "未填写（使用代码默认值 8000）"], ["8100", "ws_port: 8100"]],
+        value: "8100"
+      },
+      {
+        name: "dotenvPort",
+        label: "② 本地 .env 中的 VOICE_SERVER_WS_PORT",
+        options: [["none", "未设置"], ["8500", "VOICE_SERVER_WS_PORT=8500"]],
+        value: "none"
+      },
+      {
+        name: "exportPort",
+        label: "③ 终端导出的环境变量 VOICE_SERVER_WS_PORT",
+        options: [["none", "未导出"], ["9000", "export VOICE_SERVER_WS_PORT=9000"]],
+        value: "none"
+      },
+      {
+        name: "adminHost",
+        label: "④ 安全校验测试：admin_api.host 暴露范围",
+        options: [
+          ["local", "127.0.0.1（仅本机访问 · 安全通过）"],
+          ["open_no_tok", "0.0.0.0 且未配 Token（危险暴露！）"],
+          ["open_with_tok", "0.0.0.0 + 已配 VOICE_MEMORY_ADMIN_TOKEN"]
+        ],
+        value: "local"
+      }
+    ],
+    buttons: [
+      {
+        label: "试一试：.env 覆盖 YAML",
+        primary: true,
+        onClick: (_p, ctl) => { ctl.set("yamlPort", "8100"); ctl.set("dotenvPort", "8500"); ctl.set("exportPort", "none"); ctl.set("adminHost", "local"); }
+      },
+      {
+        label: "试一试：终端环境变量最高优先",
+        onClick: (_p, ctl) => { ctl.set("yamlPort", "8100"); ctl.set("dotenvPort", "8500"); ctl.set("exportPort", "9000"); ctl.set("adminHost", "local"); }
+      },
+      {
+        label: "试一试：触发 ConfigError 安全拦截",
+        onClick: (_p, ctl) => { ctl.set("adminHost", "open_no_tok"); }
+      }
+    ],
+    caption: "规则来自 src/voice_server/config.py::load_config (L195-252)：先加载 dataclass 默认值与 YAML，再按 (.env, 终端环境) 顺序覆盖，最后执行 _validate 安全不变量检查。",
+    render(p, out) {
+      let finalPort = 8000;
+      let winner = "代码默认值 (ServerConfig.ws_port = 8000)";
+      if (p.yamlPort !== "none") { finalPort = Number(p.yamlPort); winner = "config.yaml 文件"; }
+      if (p.dotenvPort !== "none") { finalPort = Number(p.dotenvPort); winner = "本地 .env 文件"; }
+      if (p.exportPort !== "none") { finalPort = Number(p.exportPort); winner = "终端导出的环境变量（最高优先级）"; }
+
+      const blocked = p.adminHost === "open_no_tok";
+      out.innerHTML = blocked
+        ? '<div class="callout bug" style="margin:6px 0 10px"><span class="ct">启动被拦截：ConfigError (退出码 2)</span><p>检测到 <code>admin_api.host = 0.0.0.0</code> 对局域网开放，但未设置 <code>VOICE_MEMORY_ADMIN_TOKEN</code>！服务拒绝带病启动，防止任意设备篡改你的长期记忆。</p></div>'
+        : '<div class="callout lab" style="margin:6px 0 10px"><span class="ct">配置校验通过 ✓</span><p>所有类型转换与安全不变量检查通过，构造出不可变（<code>frozen=True</code>）的 <code>AppConfig</code> 对象。</p></div>';
+
+      DeskCourse.readout(out, {
+        "最终生效 ws_port": blocked ? "拒绝启动" : finalPort,
+        "胜出配置来源": winner,
+        "进程退出码": blocked ? "2 (ConfigError)" : "0 (正常就绪)"
+      });
+    }
+  });
+});
+</script>
+</body>
+</html>

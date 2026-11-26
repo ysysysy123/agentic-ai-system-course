@@ -1,119 +1,74 @@
-# Deskbot 全套 HTML 教材制作交接
+# Deskbot 交互式 HTML 教材：按阶段分批制作交接书（38 课版）
 
-## 接手后直接执行的任务
+更新日期：2026-11-26
 
-为一位完全零基础学习者，完成 [syllabus.md](syllabus.md) 中 **M00–M14 的85课主线，以及M15的5课选修，共90课**。面向学生的课文全部使用交互式HTML，围绕实际Deskbot项目安排可运行练习、源码走读、失败分析和改进实践。
+---
 
-用户已要求制作全部内容。这是教材编写任务，可以按课、按模块连续推进，**不用等待学生答题或逐课确认**。每一课仍需独立、完整地编写和检查，不能把90个课题变成同一模板的标题替换。额度或上下文不足时保存准确断点，后续从断点继续，直到全部教材满足交付标准。
+## 一、核心任务与「阶段闸门（Stage Gate）」规则
 
-## 先读这些文件
+本任务面向一位**编程与 Agent 完全零基础、目标深圳 Agent 岗求职、手头有 ESP32 实机但本地日常以模拟为主**的学习者，围绕 `/home/yyy/desktop/ai/Deskbot/server/voice` 制作一套 **6 个阶段（`M00`–`M05`）、共 38 课**的离线交互式 HTML 实战课程。
 
-1. 课程仓库根目录的AGENTS.md：项目规则，特别是course/与references/只读。
-2. 本交接文件：本次全套教材制作的任务范围与交付条件。
-3. [AUTHORING_STATUS.md](AUTHORING_STATUS.md)：教材完成情况与下一课；这是生产进度的唯一记录。
-4. [syllabus.md](syllabus.md)：唯一课程顺序、90个课号、每课知识点/源码/实验/验收。
-5. [ai-authoring-guide.md](ai-authoring-guide.md)：零基础讲解、HTML交互、代码依据和校验规范。
-6. [source-map.md](source-map.md)、[improvement-roadmap.md](improvement-roadmap.md)：项目覆盖清单与真实改进方向。
-7. [lessons/M00.01.html](lessons/M00.01.html)、[assets/lesson.css](assets/lesson.css)、[assets/lesson.js](assets/lesson.js)：已有页面和视觉/交互范例。
-8. [progress.md](progress.md)：学生的实际学习记录，制作教材时只读参考，不替学生填写已掌握。
+> **最重要的执行红线（为什么不能一口气生成全部 38 课）**：
+> 这是一套**边学边改**课程！学习者在 `M01.06–07`、`M02.02/06`、`M03.06`、`M04.03`、`M05.01–02` 会亲手重构 `Deskbot/server/voice` 的核心源码。
+> 因此，**教材编写必须按阶段（1 个阶段 = 5～8 课）分批推进**：
+> - 每次接手教材制作任务，**只连续完成当前解锁的那 1 个阶段**（如果额度充足且用户明确要求提前备课，最多只允许连续生成 `M00` + `M01` 共 12 课，因为第一次修改 Deskbot 源码发生在 `M01.06`）。
+> - 从 `M02` 开始，每一阶段的教材**必须在学习者完成上一阶段的源码改造（或明确跳过/定稿当前源码状态）之后**，重新读取最新的 `/home/yyy/desktop/ai/Deskbot/server/voice` 源码再编写，确保 HTML 中的代码片段、符号名与行号永远与真实仓库一致！
 
-## 当前已经交付了什么
+---
 
-- 完整大纲：85课主线、5课选修，课号固定。
-- 源码地图：曾核对server/voice的117个可见文件；接手时重新核对当前清单，新增文件按职责补入。
-- 系统差距分析、20个建议评测场景及指标定义。
-- 学习目录index.html：列出90个课题，当前只有M00.01已有HTML。
-- M00.01交互课：语音/文字流程切换、工具循环示意、真实源码片段、可选自测、浏览器草稿。
-- 共享CSS与首课JS；首课原始Markdown及答案保留。
-- 本机已做的检查：相对资源/锚点、JS语法、源码片段匹配、浏览器流程切换/工具步骤/源码切换/自测反馈，以及桌面与390px窄屏布局。核对日期为2026-11-26。
-- 学生尚未提交学习验收证据；教材生成与学生掌握是两种状态。
+## 二、接手必读文件顺序
 
-**下一项是M00.02。其余89课尚未编写。** 先检查并复用首课，发现影响教学或交互的问题可修复，但不要先推倒页面结构或另建学习平台。
+1. `/mnt/study/github/agentic-ai-system-course/AGENTS.md`：全局师徒准则，**严禁修改 `course/` 与 `references/`**。
+2. 本文件（`HANDOFF.md`）与 [AUTHORING_STATUS.md](AUTHORING_STATUS.md)：确认当前处于哪个阶段、下一课是哪一课。
+3. [syllabus.md](syllabus.md)：唯一权威的 **38 课大纲**（每课首讲语法、源码范围、HTML 交互规格、动手实验与验收标准）。
+4. [improvement-roadmap.md](improvement-roadmap.md)：5 大求职级实战升级（PR-1～PR-5）与 30 条自动化 Eval 题库规格。
+5. [source-map.md](source-map.md)：117 个项目文件的归属与`白盒精读` / `灰盒走读`深度边界。
+6. [ai-authoring-guide.md](ai-authoring-guide.md) 与 [HTML_DESIGN_RULES.md](HTML_DESIGN_RULES.md)：零基础拆桥规范、统一 HTML 视觉组件手册与 4 步自动化建课流程。
+7. [templates/lesson.html](templates/lesson.html)、[lessons/M00.01.html](lessons/M00.01.html)、`assets/deskbot-course.css`、`assets/deskbot-course.js`、`scripts/course_tool.py`：标准单课母版、第 1 课完成样板、共享 UI 运行时与 CLI 校验工具。
+8. [progress.md](progress.md)：学生的真实学习验收进度（制作课件时只读，绝不把“课件已生成”写成“学生已掌握”）。
 
-## 取得真实项目源码
+---
 
-课程仓库与实现仓库是两个独立Git仓库：
+## 三、六个分批生产批次（Batches & Gates）
 
-| 用途 | 仓库/目录 |
-|---|---|
-| 课程、HTML教材与练习 | https://github.com/ysysysy123/agentic-ai-system-course ，默认分支main |
-| Deskbot真实实现 | https://github.com/ysysysy123/Deskbot ，默认分支main |
-| 本机课程目录 | /mnt/study/github/agentic-ai-system-course |
-| 本机深入阅读范围 | /home/yyy/desktop/ai/Deskbot/server/voice |
-| HTML教学形式参考 | /mnt/study/github/autumn-recruitment/lab ，只参考，不修改或运行其自动同步脚本 |
+| 批次 | 阶段与课号范围 | 课数 | 源码读取与阶段闸门（Gate）条件 |
+|---|---|---:|---|
+| **Batch 0** | **`M00`**：`M00.01`–`M00.05` | 5 课 | **✅ 已全部完成并校验通过**（含配套 `exercises/M00.02`–`M00.05` 与 `pytest` 验证）。 |
+| **Batch 1** | **`M01`**：`M01.01`–`M01.08` | 8 课 | 读取原始 `dialogue.py`、`openai_compatible.py`、`camera_dialogue.py`、`logging_utils.py`。在 `M01.06–07` 给出 PR-1（`ToolRegistry` + 复合指令修复）与 PR-2（分级自愈 + Doom-Loop）的完整教学指引与练习沙盒。<br>**🛑 Gate 1**：停下等待学生学完 `M01` 并落盘 PR-1 & PR-2！ |
+| **Batch 2** | **`M02`**：`M02.01`–`M02.07` | 7 课 | 重新核对 Gate 1 后的最新 `session.py` / 对话后端与 `memory/` 全目录源码，编写 SQLite、Prefix Cache 分层（PR-3 上）与 FTS5+RRF 混合召回（PR-4）课程。<br>**🛑 Gate 2**：停下等待学生完成 `M02` 与 PR-3 上 / PR-4！ |
+| **Batch 3** | **`M03`**：`M03.01`–`M03.07` | 7 课 | 读取最新 `app.py`、`websocket_server.py`、`session.py`、`audio/`、语音 `providers/` 与压测脚本，编写异步队列、抢话打断与闲聊首字流式优化（PR-3 下）课程。<br>**🛑 Gate 3**：停下等待学生完成 `M03` 与 PR-3 下！ |
+| **Batch 4** | **`M04`**：`M04.01`–`M04.05` | 5 课 | 读取 `local_testing.py`、`local_test/`、`camera_mcp.py`、`device_mcp.py`、`openai_vision.py`、`admin_api.py`、`ota.py`、`music.py` 及外围视觉/固件接口，完成本地模拟全链路与可选 ESP32 联调课。<br>**🛑 Gate 4**：停下等待学生完成端到端联调验收！ |
+| **Batch 5** | **`M05`**：`M05.01`–`M05.06` | 6 课 | 基于前四阶段最终代码，编写 `TurnTrace` + Token 账本（PR-5 上）、30 条自动化 Eval 套件（PR-5 下）、前后量化对照实验、架构复盘文档与深圳模拟面试通关课。 |
 
-有本机源码时读取本机文件；换机器后，可将Deskbot克隆到单独目录，只读研究其中的server/voice。不要把完整Deskbot源码复制进课程仓库。远程AI可以通过GitHub读取真实文件，但仅有大纲和网页首课不足以编写全部项目课。
+---
 
-若拿不到某课所需源码：先列出具体缺失文件，把该课记录为待补材料；可以继续制作不依赖缺失材料的基础课。不要编造路径、代码、行号、运行结果或硬件效果。汇总缺失项，取得材料后回补，不能带着占位内容宣称全套完成。
+## 四、技术与工程护栏（避坑必看）
 
-源码与测试优先于历史README；外部SDK接口按项目实际版本核对官方文档。本机Python曾为3.11.16；历史383项Python与16项浏览器测试通过只代表当次离线验证，不能换成新环境的测试结果。
+1. **统一使用内置模板与 CLI 工具链（严禁自造零散样式或盲猜源码行号）**：
+   - 新建课程一律运行：`python3 workspace/deskbot-learning/scripts/course_tool.py new <Mxx.yy>`（自动从 `templates/lesson.html` 与 `syllabus.md` 生成骨架和 `exercises/<Mxx.yy>/` 目录）。
+   - 提取真实源码一律运行：`python3 workspace/deskbot-learning/scripts/course_tool.py snippet <相对路径> <起行> <止行>`（自动核对行号、HTML 转义并安全拦截 `.env`）。
+   - 所有页面统一引用 `../assets/deskbot-course.css` 与 `../assets/deskbot-course.js`（组件用法详见 [HTML_DESIGN_RULES.md](HTML_DESIGN_RULES.md)，真实样板见 `lessons/M00.01.html`）。
+   - 每完成一课及整批收尾时，必须运行 `python3 workspace/deskbot-learning/scripts/course_tool.py check --all` 并确保 100% 零报错通过！
+2. **练习代码目录隔离**：
+   - 每课配套的可运行小脚本放在 `workspace/deskbot-learning/exercises/Mxx.yy/`，提示与参考实现用清晰文件名（如 `task.py` vs `solution.py`）分开；运行产生的临时 `.db` 或日志放入 `outputs/` 并保持忽略。
+   - **编写教材本身绝不直接篡改正在使用的 `/home/yyy/desktop/ai/Deskbot/server/voice` 源码**！PR-1～PR-5 的真实仓库改动只在学生进入该课时（或明确要求你实施该 PR 时）在测试保护下执行。
+3. **真实仓库双路径说明**：
+   - 本机课程目录：`/mnt/study/github/agentic-ai-system-course`
+   - 本机 Deskbot 源码目录：`/home/yyy/desktop/ai/Deskbot/server/voice`（外围接口位于 `/home/yyy/desktop/ai/Deskbot`）
+   - 若在无本地源码环境编写：缺少对应源码文件时明确列出缺失文件路径并暂停该课源码区，**严禁凭记忆编造文件路径、类名、函数签名、行号或假测试结果**。
+4. **准确更新索引与断点**：
+   - 每完成并校验一课，立刻更新 [AUTHORING_STATUS.md](AUTHORING_STATUS.md) 的状态与校验记录，并将 `index.html` 中对应条目从“待编写”改为可点击的 `<a href="lessons/Mxx.yy.html">`。若遇上下文或额度上限，保存完整单课并在 `AUTHORING_STATUS.md` 写明精确断点。
 
-## 每课怎么完成
+---
 
-按照大纲对应课号，逐课执行：
-
-1. **取材。** 读本课知识点、前置、真实文件、相关测试；列清本课实际要解释的函数、输入、状态和输出。
-2. **讲清。** 从一个具体问题开始，定义新术语与首次出现的语法；给小例子，再回到真实项目。Python、JS、SQL、HTML/CSS、命令行都按零基础解释。
-3. **制作页面。** 完整正文、必要流程图/表格、一个能操作或运行的例子、源码对应、失败情形、默认折叠的练习/提示/参考答案、回目录与前后课导航。
-4. **准备实验。** 概念课使用离线页面模拟即可；编程课提供完整小实验、运行目录/命令、预期输出、修改任务与验证。标准库和fake优先。真实模型/硬件课明确依赖和验收步骤，缺环境时不伪造结果。
-5. **检查。** 检查本课资源/导航、JS或Python语法、关键交互与实验行为；修改共享资源时回看已生成页面受影响的功能。涉及数学计算时才增加数值核对。
-6. **记录。** 更新AUTHORING_STATUS中的本课状态、验证证据、问题和下一课；将新增HTML加入index，并将教学源码符号覆盖补到source-map约定记录。
-7. **继续。** 当前课检查通过后直接开始下一课。每个模块结束时核对知识/文件覆盖，检查目录链接和至少一个代表页面的桌面/窄屏效果。
-
-每个模块结束可以保存一个有意义的提交；用户已授权课程工作推送到自己的origin/main，只提交本次教材相关文件，确认推送成功。不要使用整仓git add -A，不要把已有course文件修改带入教材提交；推送失败时保留本地成果、记录原因与断点。
-
-## 文件与共享资源约定
-
-- 学生课文：lessons/Mxx.yy.html。
-- 大纲、编写规范、项目分析、交接：当前Markdown文件继续作为依据。
-- 练习：exercises/Mxx.yy/；提示和参考实现与学生任务分开，运行生成文件放该练习的outputs/。
-- 样式：assets/lesson.css；可复用交互可继续抽到assets/，单课复杂交互放单课脚本。
-- **当前lesson.js含有首课的固定流程、题目和M00.01草稿键，它不是通用课程引擎。** 后续课不要直接沿用这些固定数据；可采用每课数据配置或按需拆分脚本，优先保持简单。修改前先理解它如何选择组件，并确认首课不回归。
-- 课程入口index.html只链接实际存在的HTML。更新“已编写课数”时以AUTHORING_STATUS为准，不把生产状态当学习完成率。
-- 页面依赖放在本课程目录，用相对路径引用。课程无需依赖另一个Lab的绝对路径、外部CDN或其后台服务。
-- 浏览器中的localStorage只存草稿/界面状态；学生掌握情况保存在progress.md。
-- previews/是本机截图，不作为课程运行依赖。运行缓存、虚拟环境和实验输出不入Git。
-
-制作可以并行委派独立课文，但共享CSS/JS、目录与生产记录由一个负责人整合，避免相互覆盖。不要为了编写课程先搭数据库、账号、自动部署或新的大型平台。
-
-## 项目事实中容易讲错的地方
-
-- 普通LLM后端与开启MCP后的工具后端要区分；可注入DialogueBackend也不等于已实现通用自主Agent。
-- 现有工具循环能多轮执行、回传成功结果，并有轮数上限后的最终回答；不能再写“没有Agent loop”。
-- 当前工具失败会直接说明失败并结束。只读工具的受控纠错是后续实践课题，尚未实现。
-- 工具可用时会先缓冲文本，影响首文字等待；不能为了即时朗读先声称动作成功。
-- 对话记忆持久化与长任务执行恢复是不同需求；同一轮工具消息会回传，完整工具轨迹并非已跨会话保存。
-- 记忆按设备隔离，已有摘要/事实/明确更正与遗忘；当前历史召回以词面匹配为主。
-- local_test.py启动浏览器桥，run.py启动语音服务；打开HTML教程与启动真实语音助手是不同操作。
-- 固件已有AEC/realtime/WebSocket插话交接代码；真实回声、停音与首字完整性仍需硬件验收。
-- 服务端发出首个音频包，不等于扬声器已经发声；工具确认收到指令，也不等于完成实际位移。
-- M13的改进先在练习/隔离副本中讲解与验证；修改正在使用的Deskbot服务、控制设备、刷机或部署需要与用户明确范围，教材生产本身不授予这些操作权限。
-
-## 全套完成的条件
-
-全部满足后，才可报告“课程制作完成”：
-
-- 90个正式课号都有完整HTML，且有大纲要求的知识、源码、实验与验收内容；选修也要编写。
-- 有需要的练习/参考答案/验证说明，学生能按给定命令运行；没有假运行结果。
-- source-map中的当前自有文件得到完整教学覆盖，大文件继续细分到函数/方法/主要分支，而不只是出现在目录表中。
-- 目录与前后导航可用，共享资源自包含，主要交互正常，桌面和窄屏能阅读。
-- M12有真实可执行的评估方法；M13把已知差距做成具体改进实验；M14给出真实贡献、演示和复盘模板。
-- AUTHORING_STATUS所有正式课均已校验；确实缺环境的真实API/硬件验收明确列出待验证项，且已完成可离线验证部分。
-- progress.md继续反映学生实际状态；完成教材不会将全部课程标为学生已掌握。
-- 完成课程目录相关提交并成功推送origin/main；报告实做内容、验证范围和确实未完成的外部验收。
-
-## 输出额度不足时怎样继续
-
-保持文件完整可读，保存当前课已完成部分；在AUTHORING_STATUS写下具体位置、尚缺内容、验证结果、下一步。不要用“其余同理”、只有TODO的页面或空练习替代后续章节。
-
-下一次接手直接从AUTHORING_STATUS的断点继续。最后给用户简短报告：已完成到哪一课、下一课、关键缺口、是否已推送；无需把整套课文重复粘贴到聊天。
-
-## 可直接交给另一位AI的指令
+## 五、一键复制给其他 AI 开始生成下一阶段（Batch 1：`M01.01`–`M01.08`）的指令
 
 ```text
-请接手我的Deskbot全套教材制作任务。先读取课程仓库根AGENTS.md，以及workspace/deskbot-learning/HANDOFF.md，按其中的阅读顺序取得大纲、生产记录、HTML示例和真实Deskbot源码。
+请接手我的 Deskbot 零基础交互式课程下一阶段的编写任务。
+先读取仓库根 AGENTS.md，以及 workspace/deskbot-learning/ 下的 HANDOFF.md、AUTHORING_STATUS.md、HTML_DESIGN_RULES.md、syllabus.md、source-map.md、improvement-roadmap.md、ai-authoring-guide.md，并查看 templates/lesson.html 与已完成的 M00.01～M00.05 课程页。
 
-目标是完成全部85课主线与5课选修。当前是教材编写模式，请从AUTHORING_STATUS的下一课开始，逐课完整制作、逐模块检查并持续推进，不等待我逐课答题或确认。面向完全零基础，输出可离线阅读和操作的HTML，配套真实源码讲解、必要实验、折叠练习/答案和完整导航。
+当前 Batch 0（M00 全 5 课）已完成。请现在执行 Batch 1：使用 `python3 workspace/deskbot-learning/scripts/course_tool.py new <课号>` 与 `snippet` 工具，完整编写并校验阶段 M01 的全部 8 课（M01.01 ～ M01.08）交互式 HTML 页面及 exercises/M01.0x/ 配套 Python 小实验，同时把 lessons/M00.05.html 底部的下一课导航链接更新为 M01.01.html。
 
-保留源码依据与实际验证记录，区分教学模拟和真实服务；学生掌握进度单独记录。按交接完成每批课程提交和推送。遇到额度上限保存明确断点，下次继续，直到满足HANDOFF的全套交付条件。
+注意阶段闸门（Gate 1）：M01.08 完成后必须立即停止，等待我学完 M01 并落地 PR-1/PR-2 源码改造，绝不提前生成 M02 及之后阶段！
+严格遵守 HTML_DESIGN_RULES.md 的组件规范（.syntax-bridge 拆解首次出现语法、tracePlayer/flowGraph/playground 离线交互模拟器、.code-walk 真实源码聚光灯走读），不读私有 .env、不直接改 Deskbot 源码。每完成一课运行 `python3 workspace/deskbot-learning/scripts/course_tool.py check --all` 确保零错误，最后更新 index.html 与 AUTHORING_STATUS.md。
 ```

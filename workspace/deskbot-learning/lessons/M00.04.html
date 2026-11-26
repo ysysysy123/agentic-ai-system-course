@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dk:lesson" content="M00.04">
+<meta name="dk:module" content="M00">
+<meta name="dk:home" content="../index.html">
+<meta name="dk:date" content="2026-11-26">
+<title>M00.04 循环、函数与异常——写出最小模拟工具调度器 · Deskbot 学习室</title>
+<link rel="stylesheet" href="../assets/deskbot-course.css">
+</head>
+<body>
+<div class="dk-layout">
+  <nav id="dk-toc" aria-label="本课目录"></nav>
+
+  <main class="dk-main">
+    <header class="dk-hero">
+      <div class="crumbs">
+        <a href="../index.html">📚 38课学习地图</a> /
+        <a href="../index.html#M00">M00 · 零基础破冰与最小够用 Python</a> /
+        <span>M00.04</span>
+      </div>
+      <p class="eyebrow">M00.04 · 零基础基石</p>
+      <h1>循环、函数与异常——写出最小模拟工具调度器</h1>
+      <p class="subtitle">为什么单个工具传错参数或设备断网时，整个语音助手服务绝不能跟着一起闪退崩溃？</p>
+      <div class="chips">
+        <span class="chip whitebox">🌱 零基础第 4 课</span>
+        <span class="chip sim">🧪 含 3 轮工具循环与异常兜底沙盒</span>
+        <span class="chip">⏱ 约 25 分钟</span>
+        <span class="chip">📍 camera_dialogue.py::_execute_impl</span>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">🎯</div>
+      <div>
+        <h4>本课唯一核心收获</h4>
+        <p>吃透 <code>for</code> 循环与推导式、<code>def</code> 函数（彻底分清 <code>return</code> 与 <code>print</code>、<code>*</code> 与 <code>**</code>）以及 <code>try/except</code> 异常捕获，亲手写出一个<strong>带轮数上限、绝不因坏参数崩溃的 45 行工具调度器</strong>。</p>
+      </div>
+    </div>
+
+    <div class="prereq">
+      <b>前置检查：</b>
+      <span class="known">✓ 已掌握：if/elif/else 分支、列表 list 与字典 dict（M00.03）</span> ·
+      <span class="gap">△ 本课从零拆解：for/range/break、列表推导式还原、def 函数与 return、**dict 解包、try/except</span>
+    </div>
+
+    <!-- ========== §01 问题引入 ========== -->
+    <section>
+      <h2><span class="num">01</span>问题引入：Agent 工具循环的三大保命问题</h2>
+      <p>当大模型开始调用外部工具时，在真实世界里几乎每分钟都会遇到三种意外：① 模型犯傻陷入死循环，没完没了地调同一个工具；② 模型传了一个越界参数（比如把音量设成 <code>150</code> 或运动时长设成 <code>99999</code> 毫秒）；③ 设备 Wi-Fi 刚好卡了一下超时了。</p>
+
+      <div class="callout intuition">
+        <span class="ct">配电箱空气开关直觉</span>
+        <p><strong>有界 <code>for</code> 循环（<code>range(max_rounds)</code>）</strong>是定时断电器——最多允许转 3 圈，到点必须停；<strong>函数（<code>def</code>）</strong>是标准插座契约——规定好插什么参数、返什么结果；<strong>异常捕获（<code>try/except</code>）</strong>则是支路保险丝——就算烤面包机短路了，只跳那一路闸并回报“操作失败”，绝不能让整栋大楼（整个语音服务器）停电闪退！</p>
+      </div>
+    </section>
+
+    <!-- ========== §02 零基础语法拆桥 ========== -->
+    <section>
+      <h2><span class="num">02</span>零基础拆桥：循环、推导式、函数契约与 <code>try/except</code></h2>
+
+      <h3>拆桥 1：有界 <code>for</code> 循环与“一行流”列表推导式还原</h3>
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 普通 for 循环（一步步看懂）</span>
+          <pre data-file="循环与提前跳出"><code class="language-python"># range(3) 依次产出 0, 1, 2（共 3 次，天然防死循环！）
+for round_index in range(3):
+    if round_index == 2:
+        break  # break 意思是“立刻跳出整个循环，不再往下转”
+    print(f"第 {round_index + 1} 轮")
+
+# 下面两段代码 100% 等价（右边浓缩版叫“列表推导式”）：
+texts = []
+for item in content_list:
+    if item.get("type") == "text":
+        texts.append(item["text"])</code></pre>
+          <p class="small">以后在 AI 生成的源码里看到 <code>[表达式 for 变量 in 列表 if 条件]</code> 不用慌——它只是把左边的 4 行新建空列表 + 循环 + 判断 + <code>append</code> 浓缩成了一行！</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · Deskbot 源码里的列表推导式真身</span>
+          <pre data-file="src/voice_server/camera_dialogue.py" data-start="97"><code class="language-python">    text_parts = [item["text"] for item in result.get("content", []) if item.get("type") == "text"]</code></pre>
+          <p class="small">逐词翻译：遍历工具返回的 <code>content</code> 列表里的每一项 <code>item</code>，如果它的 <code>"type"</code> 是 <code>"text"</code>，就把它的 <code>"text"</code> 字段取出来装进新列表 <code>text_parts</code>。</p>
+        </div>
+      </div>
+
+      <h3>拆桥 2：函数 <code>def</code>（<code>return</code> vs <code>print</code>）与 <code>try / except</code> 保险丝</h3>
+      <aside class="sidenote">
+        <strong><code>**args</code> 字典解包魔法：</strong>如果 <code>args = {"level": 80}</code>，那么写 <code>set_volume(**args)</code> 就等价于写 <code>set_volume(level=80)</code>！这正是工具调度器把 JSON 字典喂给 Python 函数的核心桥梁。
+      </aside>
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 函数契约与异常拦截</span>
+          <pre data-file="return 与 try/except"><code class="language-python"># 星号 * 后面的参数必须写名字调用，如 set_volume(level=80)
+def set_volume(*, level: int) -&gt; dict:
+    if not 0 &lt;= level &lt;= 100:
+        raise ValueError("音量必须在 0..100 之间")
+    return {"success": True, "volume": level}
+
+try:
+    out = set_volume(level=150)  # 触发 ValueError，立刻跳去 except
+except ValueError as err:
+    out = {"success": False, "error": str(err)}
+print("程序没崩，安全拿到：", out)</code></pre>
+          <p class="small"><strong>死磕区分 <code>print</code> 和 <code>return</code>：</strong><code>print(...)</code> 只是往人类屏幕上印一行字，函数本身交回的是空值 <code>None</code>；只有写 <strong><code>return 结果</code></strong>，调用它的上层程序才能真正拿到数据继续往下传！</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · Deskbot 工具名映射小函数</span>
+          <pre data-file="src/voice_server/camera_dialogue.py" data-start="28"><code class="language-python">def _model_tool_name(name: str) -&gt; str:
+    # Function calling endpoints may only accept letters, digits, '_' and '-'.
+    # Keep firmware names intact on the wire and separate browser/device tools.
+    return "device_" + name.replace(".", "_")</code></pre>
+          <p class="small">很多大模型 API 不允许函数名里带点号 <code>.</code>（如固件上报的 <code>self.motion.stop</code>），这个 2 行小函数把点号替换成下划线并加上前缀，返回 <code>"device_self_motion_stop"</code>。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §03 交互沙盒：3 轮有界调度与异常捕获 ========== -->
+    <section>
+      <h2><span class="num">03</span>动手推演：模拟工具调度器的三种运行命运</h2>
+      <p>切换下方三个场景，观察同一套调度循环如何应对「正常执行」、「参数越界异常」以及「超轮数死循环」：</p>
+
+      <div id="sim-dispatcher"></div>
+    </section>
+
+    <!-- ========== §04 真实源码走读 ========== -->
+    <section>
+      <h2><span class="num">04</span>真实源码走读：<code>camera_dialogue.py::_execute_impl</code> 防御链</h2>
+      <p>来看 Deskbot 真正执行工具的核心函数 <code>_execute_impl</code>。你会惊喜地发现：虽然它有 28 行，但用到的全是我们刚学过的 <code>not in</code>、<code>isinstance</code>、<code>and/or</code> 和 <code>try/except</code>！点击右侧卡片逐段点亮：</p>
+
+      <div class="code-walk" data-dim>
+<pre data-file="src/voice_server/camera_dialogue.py" data-start="373"><code class="language-python">        original_name = next((name for name in device_tool_names if _model_tool_name(name) == call.name), call.name)
+        call = ToolCall(call.id, original_name, call.arguments)
+        try:
+            if call.name not in available_names:
+                if call.name == "self.camera.take_photo":
+                    return self._text({"success": False, "error": "设备没有上报拍照工具，请检查固件中的相机初始化和工具注册"})
+                error = "当前会话没有此摄像头工具" if call.name.startswith("self_camera_") else "当前会话没有此设备工具"
+                return self._text({"success": False, "error": error})
+            arguments = json.loads(call.arguments or "{}")
+            if not isinstance(arguments, dict):
+                return self._text({"success": False, "error": "工具参数必须是对象"})
+            if call.name in device_tool_names:
+                if call.name.startswith("self.motion.") and call.name not in {"self.motion.stop", "self.motion.get_status"}:
+                    duration = arguments.get("duration_ms")
+                    if isinstance(duration, bool) or not isinstance(duration, int) or not 1 &lt;= duration &lt;= 5000:
+                        return self._text({"success": False, "error": "运动工具必须使用 1 到 5000 毫秒的 duration_ms"})
+                if request.device_mcp is None:
+                    return self._text({"success": False, "error": "实机 MCP 未连接"})
+                result = await request.device_mcp.call_tool(call.name, arguments)
+            else:
+                result = await self._rpc(client, request.session_id, "tools/call", {
+                    "name": call.name, "arguments": arguments,
+                })
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError):
+            return self._text({"success": False, "error": "设备工具连接失败或响应超时"})
+        except (ValueError, KeyError) as error:
+            return self._text({"success": False, "error": str(error)})
+        contents = result.get("content", [])</code></pre>
+        <ol class="walk">
+          <li data-lines="373-374"><strong>还原真实工具名</strong>：把模型叫的 <code>device_self_motion_stop</code> 还原回设备认识的 <code>self.motion.stop</code>。</li>
+          <li data-lines="376-380"><strong>第一道岗哨（已知工具检查）</strong>：如果模型瞎编了一个不在 <code>available_names</code> 集合里的工具名，立刻 <code>return</code> 错误 JSON，绝不往下发请求。</li>
+          <li data-lines="381-388"><strong>第二道岗哨（参数类型与运动安全限幅）</strong>：检查参数是不是字典；如果是运动指令，强制要求 <code>duration_ms</code> 是 <code>1..5000</code> 之间的整数（注意 <code>isinstance(True, int)</code> 在 Python 里居然是 <code>True</code>，所以代码特地先排除了 <code>isinstance(duration, bool)</code>！）。</li>
+          <li data-lines="396-399"><strong>保命保险丝（<code>except</code> 兜底）</strong>：不管是网络断连超时，还是 <code>json.loads</code> 解析坏字符串抛出 <code>ValueError</code>，统统抓起来转成干净的 <code>{"success": False, "error": ...}</code> 返回，语音服务稳如泰山！</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========== §05 本地动手实验 ========== -->
+    <section>
+      <h2><span class="num">05</span>本地动手实验：运行并扩展你的 45 行模拟工具调度器</h2>
+      <p>在终端运行本课实验脚本，观察 4 步计划中前两步成功、第 3 步因音量 <code>150</code> 越界被安全拦截并提前 <code>break</code> 停止的过程：</p>
+
+      <div class="terminal-lab">
+        <div class="term-head">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span>工作目录：/mnt/study/github/agentic-ai-system-course</span>
+        </div>
+        <div class="term-body">
+          <div class="cmd-row">
+            <span class="cmd-text">python3 workspace/deskbot-learning/exercises/M00.04/task.py</span>
+            <button class="copy-cmd" type="button">复制命令</button>
+          </div>
+          <div class="term-out">[第1步] self.get_battery -> {'success': True, 'battery': 78}
+[第2步] self.audio_speaker.set_volume -> {'success': True, 'volume': 80}
+[第3步] self.audio_speaker.set_volume -> {'success': False, 'error': '音量 level 必须是 0 到 100 之间的整数'}</div>
+        </div>
+      </div>
+
+      <div class="callout lab">
+        <span class="ct">动手小挑战（亲手加一个新工具！）</span>
+        <ol>
+          <li>打开 <code>exercises/M00.04/task.py</code>，模仿 <code>get_battery</code> 写一个无参数的只读函数 <code>get_theme()</code>，返回 <code>{"success": True, "theme": DEVICE_STATE["theme"]}</code>，并把它注册进 <code>TOOLS</code> 字典（键名为 <code>"self.screen.get_theme"</code>）。</li>
+          <li>试着在 <code>sample_plan</code> 里故意传一个多余参数 <code>("self.get_battery", {"foo": 1})</code>，预测一下会被哪一个 <code>except</code> 捕获？</li>
+        </ol>
+      </div>
+
+      <details class="reveal hint">
+        <summary>卡住了？点开查看分层提示</summary>
+        <p><strong>提示 1：</strong>在 <code>TOOLS</code> 字典里注册函数时，写的是<strong>函数名本身 <code>get_theme</code>（不带括号！）</strong>；如果写成 <code>get_theme()</code>，就变成在注册时立刻调用了。</p>
+        <p><strong>提示 2：</strong>给无参函数传多余关键字参数 <code>get_battery(foo=1)</code> 会触发 Python 内置的 <code>TypeError</code>，正好被 <code>except (TypeError, ValueError)</code> 稳稳接住！</p>
+      </details>
+
+      <details class="reveal deep">
+        <summary>实验参考解法（核对 exercises/M00.04/solution.py）</summary>
+        <pre data-file="exercises/M00.04/solution.py"><code class="language-python">def get_theme() -&gt; dict[str, object]:
+    return {"success": True, "theme": DEVICE_STATE["theme"]}
+
+TOOLS["self.screen.get_theme"] = get_theme</code></pre>
+      </details>
+    </section>
+
+    <!-- ========== §06 小结与面试表达 ========== -->
+    <section>
+      <h2><span class="num">06</span>本课浓缩与面试表达</h2>
+      <div class="callout summary">
+        <span class="ct">三句话记住本课精髓</span>
+        <ul>
+          <li><strong>循环必设上限：</strong>凡是让大模型驱动的工具循环，外层必须套上 <code>max_rounds</code> 硬上限，绝不写无保底的 <code>while True</code>。</li>
+          <li><strong>函数分清存与调：</strong><code>TOOLS = {"name": func}</code> 存的是函数对象（不加括号），取出后 <code>func(**args)</code> 才是真正调用。</li>
+          <li><strong>工具层不抛裸异常：</strong>工具边界要把超时、断连、坏参数统一捕获并翻译成结构化 <code>{"success": False, "error": "..."}</code>，交给上层循环决策（对应本仓课程 <code>Ch.02 Errors are also turns</code>）。</li>
+        </ul>
+      </div>
+
+      <div class="callout interview">
+        <span class="ct">Python 细节彩蛋 · 面试官超爱问的小坑</span>
+        <p>「在写工具参数校验时有个经典的 Python 陷阱：<code>bool</code> 其实继承自 <code>int</code>，所以 <code>isinstance(True, int)</code> 的结果是 <code>True</code>（且 <code>True == 1</code>）！如果只写 <code>isinstance(duration, int) and 1 &lt;= duration &lt;= 5000</code>，模型误传 <code>duration_ms=true</code> 就会混过校验变成运动 1 毫秒。因此在 Deskbot 里我们专门写了 <code>if isinstance(duration, bool) or not isinstance(duration, int)</code> 先把布尔值挡在门外。」</p>
+      </div>
+    </section>
+
+    <!-- ========== §07 自测与讲回验收 ========== -->
+    <section>
+      <h2><span class="num">07</span>自测与通关讲回验收</h2>
+
+      <details class="reveal q">
+        <summary>可选快测：3 道函数与异常处理判断题</summary>
+        <form class="dk-quiz">
+          <fieldset data-name="q1" data-answer="b" data-explain="函数里只写了 print 没有写 return 时，Python 默认返回 None，调用方拿到的 res 就是 None！">
+            <legend>1. 如果函数里只写了 <code>print({"success": True})</code> 而忘了写 <code>return</code>，外层执行 <code>res = get_battery()</code> 拿到的 <code>res</code> 是什么？</legend>
+            <label class="q-opt"><input type="radio" name="q1" value="a"> A. <code>{"success": True}</code></label>
+            <label class="q-opt"><input type="radio" name="q1" value="b"> B. <code>None</code>（屏幕上有打印，但调用方手里什么都没拿到！）</label>
+            <label class="q-opt"><input type="radio" name="q1" value="c"> C. 直接报语法错误</label>
+          </fieldset>
+
+          <fieldset data-name="q2" data-answer="a" data-explain="注册表字典需要保存函数本身供日后按需调用；加了括号就会在启动加载字典那一刻立刻执行一次，把返回值存进去。">
+            <legend>2. 往工具注册表字典里登记函数时，应该写 <code>{"get_battery": get_battery}</code> 还是 <code>{"get_battery": get_battery()}</code>？</legend>
+            <label class="q-opt"><input type="radio" name="q2" value="a"> A. 不带括号的 <code>get_battery</code>（存函数本身，等真正调度时再加括号执行）</label>
+            <label class="q-opt"><input type="radio" name="q2" value="b"> B. 带括号的 <code>get_battery()</code></label>
+            <label class="q-opt"><input type="radio" name="q2" value="c"> C. 两种写法效果一样</label>
+          </fieldset>
+
+          <fieldset data-name="q3" data-answer="c" data-explain="捕获具体异常并转成可读错误返回，既保护了服务进程不崩溃，又不会像裸 except: pass 那样把真正的程序 Bug 静默吞掉无法排查。">
+            <legend>3. 为什么 <code>_execute_impl</code> 要明确捕获网络/解析异常并返回 <code>{"success": False, "error": ...}</code>，而不是直接让异常往外炸，也不是写 <code>except Exception: pass</code>？</legend>
+            <label class="q-opt"><input type="radio" name="q3" value="a"> A. 因为 Python 不允许不写 try</label>
+            <label class="q-opt"><input type="radio" name="q3" value="b"> B. 写 <code>pass</code> 吞掉所有错误更好</label>
+            <label class="q-opt"><input type="radio" name="q3" value="c"> C. 直接往外炸会中断整轮会话甚至服务；写 <code>pass</code> 会静默丢错；转成结构化错误既保住了服务稳定，又保留了失败原因供播报或模型自愈</label>
+          </fieldset>
+          <button class="dk-btn primary" type="submit">核对判断与解析</button>
+        </form>
+      </details>
+
+      <div class="teachback-card" data-teachback>
+        <h3>📝 M00.04 通关讲回草稿箱</h3>
+        <label class="tb-field">
+          1. 用自己的话解释：<code>print</code> 和 <code>return</code> 有什么区别？<code>TOOLS[name](**arguments)</code> 里的两个星号 <code>**</code> 起了什么作用？
+          <textarea data-field="fn_unpack" placeholder="想象一下 arguments = {'level': 80} 时 **arguments 变成了什么…"></textarea>
+        </label>
+        <label class="tb-field">
+          2. 在刚才的动手挑战中，给无参数的 <code>get_battery</code> 故意传入 <code>{"foo": 1}</code> 时发生了什么？为什么程序没有崩溃？
+          <textarea data-field="exc_obs" placeholder="记录你实际运行看到的结果…"></textarea>
+        </label>
+        <div class="tb-actions">
+          <button class="dk-btn primary" type="button" data-copy-teachback>📋 一键复制我的回答发给 AI 老师验收</button>
+          <span class="tb-status">草稿会自动保存在当前浏览器本地。</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="dk-nav" aria-label="课程前后导航">
+      <a href="M00.03.html"><small>← 上一课 · M00.03</small>分支、列表与字典——亲手拼出大模型看懂的消息</a>
+      <a class="next" href="M00.05.html"><small>下一课 · M00.05 →</small>模块导入、JSON/YAML 配置与你的第一个 pytest 单元测试</a>
+    </nav>
+
+    <div class="ask-ai">
+      💬 随时向陪读 AI 提问：<code>提交 M00.04 回答验收</code> · <code>再出两道列表推导式练习</code> · <code>进入 M00.05</code>
+    </div>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · M00.04 · 核对日期 2026-11-26</span>
+      <span><a href="../syllabus.md">课程大纲</a> · <a href="../source-map.md">源码地图</a></span>
+    </footer>
+  </main>
+
+  <aside class="dk-margin" aria-hidden="true"></aside>
+</div>
+
+<script src="../assets/deskbot-course.js"></script>
+<script>
+DeskCourse.ready(() => {
+  DeskCourse.tracePlayer("#sim-dispatcher", {
+    graph: {
+      width: 720,
+      height: 112,
+      nodes: [
+        { id: "loop",   label: "for 轮数守门", sub: "max_rounds = 3", x: 90,  y: 56, w: 132, h: 48 },
+        { id: "lookup", label: "TOOLS 字典查找", sub: "name in TOOLS", x: 275, y: 56, w: 140, h: 48 },
+        { id: "exec",   label: "try 执行函数",  sub: "func(**args)",  x: 465, y: 56, w: 135, h: 48 },
+        { id: "out",    label: "结构化返回",    sub: "success: bool", x: 640, y: 56, w: 125, h: 48 }
+      ],
+      edges: [
+        { id: "e1", from: "loop",   to: "lookup", label: "未超限" },
+        { id: "e2", from: "lookup", to: "exec",   label: "找到函数" },
+        { id: "e3", from: "exec",   to: "out",    label: "return/except" }
+      ]
+    },
+    scenarios: [
+      {
+        label: "✅ 正常两步执行",
+        summary: "先查电量，再把音量调到 80——两步均合法通过，计划顺利结束：",
+        steps: [
+          {
+            node: "loop", edge: "e1", role: "server", badge: "Round 1 / 3", state: "round_index = 0",
+            title: "第 1 轮进入循环：请求 self.get_battery",
+            explain: "0 < 3 未超上限，进入 TOOLS 注册表查找对应函数。",
+            data: 'tool_name = "self.get_battery", args = {}',
+            lang: "python", source: "exercises/M00.04/task.py"
+          },
+          {
+            node: "out", edge: "e3", role: "tool", badge: "Round 1 成功", state: "success = True",
+            title: "get_battery() 正常 return 字典，继续下一轮",
+            explain: "结果追加进 outcomes，第 2 轮接着把音量成功设为 80。",
+            data: '{"round": 2, "tool": "self.audio_speaker.set_volume", "result": {"success": True, "volume": 80}}',
+            lang: "python", source: "exercises/M00.04/task.py"
+          }
+        ]
+      },
+      {
+        label: "🛡️ 参数越界被 except 安全兜底",
+        summary: "模型误传 level=150，函数内部 raise ValueError，看调度器如何防止程序崩溃：",
+        steps: [
+          {
+            node: "exec", edge: "e2", role: "tool", badge: "触发 ValueError", state: "level = 150", error: true,
+            title: "1. set_volume(level=150) 检查不通过，主动 raise ValueError",
+            explain: "如果不加 try/except，这一行会直接炸穿整个调用栈导致程序异常退出。",
+            data: 'if not 0 <= level <= 100:\n    raise ValueError("音量 level 必须是 0 到 100 之间的整数")',
+            lang: "python", source: "exercises/M00.04/task.py · L16-17"
+          },
+          {
+            node: "out", edge: "e3", role: "server", badge: "except 转化为字典", state: "服务存活 ✓",
+            title: "2. dispatch_tool 的 except 捕获异常，包装成标准失败字典并 break",
+            explain: "上层拿到了干净的 {'success': False, 'error': '...'}，既能播报原因，将来在 M01.07 还能回喂给模型自动改参！",
+            data: '{"success": False, "error": "音量 level 必须是 0 到 100 之间的整数"}',
+            lang: "python", source: "camera_dialogue.py::_execute_impl · L398-399"
+          }
+        ]
+      },
+      {
+        label: "⏱️ 达到 max_rounds=3 强制刹车",
+        summary: "假如模型发疯一口气列了 10 次重复查询，有界循环在第 3 次结束时准时切断：",
+        steps: [
+          {
+            node: "loop", role: "error", badge: "触发轮数上限", state: "idx == 3 (停止)", error: true,
+            title: "执行满 3 次后，for range(3) 自然耗尽退出，拒绝执行第 4～10 次",
+            explain: "避免了无限消耗 Token 账单和硬件磨损，随后向用户说明已达单轮操作上限。",
+            data: 'stop_reason = "max_rounds"  # 实际执行步数严格锁死在 3 步',
+            lang: "python", source: "camera_dialogue.py · L315, L334-336"
+          }
+        ]
+      }
+    ]
+  });
+});
+</script>
+</body>
+</html>

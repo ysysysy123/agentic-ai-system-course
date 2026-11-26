@@ -1,102 +1,84 @@
-# Deskbot Agent 教材编写指南
+# Deskbot 交互式课程：AI 教材编写与陪读指南
 
-本指南供后续 AI 按学习计划编写教材。学生从零基础开始，目标是读懂并能独立维护 `Deskbot/server/voice` 中的自有代码，逐步掌握 agent 开发，把经过自己理解、改进和验证的工作整理成深圳 agent 岗位可讲清楚的求职项目。学习顺序先电脑浏览器，再实机；Deskbot 其余模块只作为已存在的接口或运行依赖。课程大纲、源码地图、编写说明和进度继续用 Markdown；面向学生的每课默认制作为本仓库内的交互式 HTML。
+本指南规范后续任何 AI（Claude Code、Codex、Cursor、Gemini 等）如何为一位**完全零基础学习者**生成交互式 HTML 课程、组织本地模拟实验，并在学习过程中协助完成 5 项求职级 Agent 升级。
 
-## 工作模式
+---
 
-**全套教材制作：** 用户要求另一AI完成全部内容时，先读[HANDOFF.md](HANDOFF.md)和[AUTHORING_STATUS.md](AUTHORING_STATUS.md)，连续完成全部85课主线与5课选修。以单课为完整编写和检查单位，按模块推进，无需等待学生作答或逐课确认。制作状态写AUTHORING_STATUS，学生学习状态仍由progress.md记录。
+## 一、两种工作模式（严禁混淆！）
 
-**教学陪读：** 用户开始学习或继续某课时，依据progress.md选择当前课，充分讲解后再按意愿练习与验收。此模式只处理当前学习内容，不因教材已编写而假定学生已经掌握。
+### 模式 A：按阶段分批编写 HTML 教材（Stage-Gated Batch Authoring）
+- **核心铁律**：**每次只生成当前指定的那 1 个阶段（5–8 课）的 HTML 课文与配套练习，绝不跨阶段一次性把 38 课全写完！**
+- **原因**：本课程是“边学边改”螺旋式课程——学生在 `M01` 会重构 `ToolRegistry` 与 `AgentDialogueBackend`，在 `M02` 会重构记忆检索与 Prompt 组装，在 `M03` 会优化流式首声路由。如果提前把 `M02`–`M05` 写成静态 HTML，后面引用到的源码行号与函数签名会立刻过期失效。
+- **执行流程**：先读仓库根 `AGENTS.md` → [HANDOFF.md](HANDOFF.md) → [AUTHORING_STATUS.md](AUTHORING_STATUS.md) → [syllabus.md](syllabus.md) → [source-map.md](source-map.md)。读取当前阶段的最新真实 Deskbot 源码，逐课完成该阶段的 `lessons/Mxx.yy.html` 与 `exercises/Mxx.yy/`，自检无误后更新 `AUTHORING_STATUS.md` 和 `index.html`，**在该阶段末尾停下等待学生学完并落地代码改动**。
 
-## 每次开始前读什么
+### 模式 B：交互式教学陪读与 PR 实战辅导（Tutoring & Pair Upgrade）
+- **核心铁律**：教材已生成 ≠ 学生已掌握！陪读时以 [progress.md](progress.md) 的当前课为准，采用苏格拉底式引导：**先让学生读当前课 HTML 并动手跑 `exercises/` → 让学生用自己的话预测/讲回 → 针对卡壳语法即时补微例子 → 在实战改造课（PR-1～PR-5）手把手带着写代码、跑 `pytest`、留前后对比证据 → 验收达标后再更新 `progress.md` 进入下一课**。
+- 陪读对话中所有含实质学习内容的问答，同时按根仓库 `AGENTS.md` 规范追加记录到 `questions/YYYY-MM-DD.md`。
 
-先读课程仓库的 `AGENTS.md`、本指南、`workspace/deskbot-learning/syllabus.md`，以及 `workspace/deskbot-learning/improvement-roadmap.md`。代码课再读取 `source-map.md` 对应行。严格沿用 syllabus 中的模块与课号（例如M07.04）、目标和顺序。教材制作从AUTHORING_STATUS的下一课继续；教学陪读从progress.md的当前课继续，尚无学习记录则从M00.01开始。需要课程概念时，再读 `course/zh/` 中与当前目标直接相关的章节。
+---
 
-代码课先查看当前 Deskbot 工作区的指令文件（若有），再读必要源码。主要代码范围是 `/home/yyy/desktop/ai/Deskbot/server/voice/`：
+## 二、零基础讲解与真实源码铁律
 
-- `src/voice_server/` 是服务实现；按当前课读取相关模块，不要一次把整个目录当教材灌给学生。
-- `tests/` 是自动化测试及其断言；用它们解释预期行为和练习故障定位。
-- `config.example.yaml`、`requirements.txt`、`run.py`、`local_test.py` 用于讲配置、依赖和启动入口。不要读取或展示本机 `.env`、密钥、Token 或本地私有配置。
-- `README.md`、`docs/voice-agent-integration.md`、`docs/local-testing.md` 提供概览、设计背景和操作说明，需与当前代码及测试核对。
-- 若课程涉及设备协议交接，只读检查 `/home/yyy/desktop/ai/Deskbot/firmware/lichuang-s3/source/xiaozhi-esp32/` 中相关固件源码及其 `AGENTS.md`。其他 Deskbot 模块只沿接口追踪，不纳入实现教学或改动范围。
+1. **首次出现的语法 100% 拆透（Just-in-Time Syntax）**：
+   - 查看 [syllabus.md](syllabus.md) 中该课标注的「零基础首讲语法与概念」。无论是 Python 的 `dict.get`、`*` 关键字参数、`@dataclass`、`yield`、`async for`、`re.fullmatch`，还是 SQL 的 `?` 参数化子查询、JS 的 `?.`，第一次出现时必须先给一个 5–10 行、不依赖项目的直观小例子逐词解释，再带入 Deskbot 真实源码。严禁甩出一句“这是 Python 标准惯用法”。
+2. **严格区分「白盒精读」与「灰盒走读」**：
+   - 对照 [source-map.md](source-map.md) 标注的深度：`白盒` 模块必须讲清输入、状态变化、关键分支、异常与返回；`灰盒` 模块（如 `opus.py`、`transcoder.py`、`pcm-worklet.js`、`ota.py`）重点讲清接口契约、数据格式、配置开关以及“出故障时看哪条日志、跑哪个 `scripts/check_*.py` 定位”，不把零基础学生拖入 C 动态库或前端样式泥潭。
+3. **绝对忠于当前真实源码与证据**：
+   - 写任何代码走读前，**必须现场读取 `/home/yyy/desktop/ai/Deskbot/server/voice` 中对应的当前源码文件**，核对真实类名、函数名与当前行号（因为前一阶段的实战 PR 可能已经修改了代码！）。
+   - 严禁读取、打印或把本机私有 `.env`、真实 API Key 写进任何课件、练习或日志；配置讲解一律使用 `config.example.yaml` 与 `.env.example`。
+   - 明确区分四类状态：**① 当前代码已实现且离线测试覆盖**、**② 需开启配置（如 `mcp.enabled=true`）才生效**、**③ 本课即将动手改造的目标方案**、**④ 需真实模型或 ESP32 实机才能最终确认的物理表现**（例如服务端发出首包 `first_audio_ms` ≠ 扬声器实际出声时间；固件收到运动指令 ≠ 底盘已完成物理位移）。
+4. **本地模拟优先，实机低风险选做**：
+   - 学生手头有 ESP32 实机，但本地日常学习、实验与评测**一律优先使用离线 Fake、纯文本调试 CLI 与电脑浏览器测试桥（`local_test.py` + `run.py`）**。绝不在未经学生明确确认的情况下执行硬件刷机、真实底盘控制或高消耗付费 API 批量调用。
 
-## 事实与证据
+---
 
-把不同证据写清楚，避免把设计意图写成已实现或已验证的能力：
+## 三、交互式 HTML 课程页面规范（完整 API 见 [HTML_DESIGN_RULES.md](HTML_DESIGN_RULES.md)）
 
-1. 用户给定的目标和操作授权决定本课范围。
-2. 对“运行时确实发生了什么”，以带日期、环境和命令的实际测试/运行记录为依据。历史验收记录只说明当时记录的场景，不自动证明当前版本或其他设备有效。
-3. 对“代码目前实现了什么”，以当前源码、配置和依赖为依据；给出准确文件路径、符号名，必要时引用当前行号。源码存在不等于运行通过。
-4. 测试说明其覆盖的预期和边界，不覆盖的行为不能由相邻测试推定。
-5. README、注释和设计文档说明作者意图或历史，需与源码核对；有冲突时指出冲突，不能仅凭文档下实现结论。
-6. 外部资料用于补充通用概念或当前变化，须标明它不是本项目源码证据。
+1. **统一设计系统、模板与 CLI 工具链**：
+   - 所有课程页（`lessons/Mxx.yy.html`）与目录页（`index.html`）**统一引用 `assets/deskbot-course.css` 与 `assets/deskbot-course.js`**（已全面升级支持浅色暖纸/深色曜石双主题切换、自动目录滚动高亮、离线语法着色、SVG 节点流程图、Agent 消息回放器与双栏聚光灯代码走读；`lessons/M00.01.html` 已升级为标准样板课）。
+   - **禁止手敲骨架或凭记忆抄行号**！必须配合内置辅助工具 `scripts/course_tool.py`：
+     - 建课：`python3 workspace/deskbot-learning/scripts/course_tool.py new <Mxx.yy>`（基于 `templates/lesson.html` 生成标准 7 板块骨架与 `exercises/<Mxx.yy>/` 目录）。
+     - 取码：`python3 workspace/deskbot-learning/scripts/course_tool.py snippet <相对路径> <起行> <止行>`（精确提取真实源码与起始行号，自动转义并屏蔽 `.env`）。
+     - 校验：`python3 workspace/deskbot-learning/scripts/course_tool.py check --all`（检查未填占位符、断链、`.code-walk` 行号越界、内联 JS `node --check` 语法与敏感凭证扫描）。
+2. **单课 HTML 必备的 7 个板块**：
+   - `01 · 问题引入`：一句话收获（`.win`）+ 前置检查（`.prereq`）+ 生活直觉卡片（`.callout.intuition`）。
+   - `02 · 零基础语法拆桥`：使用双栏 `.syntax-bridge`（左栏 5 行纯标准库极简例子逐词解释，右栏对应 Deskbot 真实写法）。
+   - `03 · 动手推演沙盒`：调用 `DeskCourse.tracePlayer` / `flowGraph` / `playground` / `.dk-stepper` / `.dk-tabs` 构建可点击推演的离线模拟器。
+   - `04 · 真实源码聚光灯走读`：使用双栏 `.code-walk`（左侧真实行号代码，右侧 `ol.walk > li[data-lines="..."]` 点击聚光灯高亮）。
+   - `05 · 本地动手实验 / PR 任务`：`.terminal-lab` 一键复制运行命令 + 预期输出 + `details.reveal.hint` 分层提示 + `details.reveal.deep` 参考解法（源码存放于 `exercises/Mxx.yy/`）。
+   - `06 · 本课浓缩与深圳面试表达`：`.callout.summary` + `.callout.interview`（30 秒面试表达模板）。
+   - `07 · 自测与通关讲回验收`：`details.reveal.q` 折叠自测 + `[data-teachback]` 讲回草稿箱（自动按课号隔离存储，支持一键复制发给陪读 AI 验收）。
 
-特别核对过的易错事实：原生 ESP32 已有设备端 AEC、realtime 与 WebSocket 的插话交接实现：播放时暂存起始音频，按序发送 abort、listen/start 和预录音。源码见固件 `main/application.cc`、`main/protocols/protocol.cc` 和 `main/protocols/websocket_protocol.h`。`server/voice/docs/local-testing.md` 曾有“实机尚未增加回复期间 VAD 插话”的旧说明，与当前 README 和固件源码不一致。讲此功能时以当前固件实现说明代码路径，并把真实回声、首字完整性和停音效果标为待硬件验收；不要再说实机没有插话实现。
+---
 
-语言服务的浏览器测试桥需要单独的语音后端：`local_test.py` 只启动本地浏览器测试桥，`run.py` 启动语音服务。讲完整浏览器链路时，明确这两个进程的角色；不要把浏览器页面描述成无需后端即可运行完整 agent。
+## 四、直接复制给其他 AI 的标准提示词
 
-## 课程文件与页面约定
+### 提示词 1：让其他 AI 按阶段生成 HTML 课件（模式 A · 每次生成 1 个阶段）
 
-- 课程规划、源码覆盖地图、AI交接说明和 `progress.md` 是 Markdown 文档。学生课文默认放在 `workspace/deskbot-learning/lessons/Mxx.yy.html`；已有的 `M00.01.md` 保留为原始讲稿，生成或维护 `lessons/M00.01.html` 作为学生阅读的页面，不删除或挪动原稿。
-- 页面引用本课程自己的相对资源：`workspace/deskbot-learning/assets/lesson.css` 和 `lesson.js`；从 `lessons/Mxx.yy.html` 使用 `../assets/lesson.css` 与 `../assets/lesson.js`。课程可以参考 `/mnt/study/github/autumn-recruitment/lab` 的 HTML 教学排版、渐进讲解和折叠自测形式；内容与项目事实必须依据 Deskbot 当前源码、测试及 `source-map.md`。Lab 的资产、绝对路径、专属脚本和自动同步流程不属于本课程依赖。页面离线打开或本地提供时应能找到全部课程资源。
-- `index.html` 是本课程目录，只把已生成的课程做成可点击链接；尚未生成的课标为“未生成”，不放失效链接。课程页提供回到目录的相对链接，并说明后续课可以按 syllabus 继续生成。
-- 每课全文讲清目标概念、前置知识、日常例子、与 Deskbot 的关系和项目边界。交互可帮助观察或改变例子中的状态，但不能代替讲解正文。一个主要概念至少对应一个学生能操作的场景；Agent/工程课展示状态或消息流，并对照至少一种失败路径；讲真实源码时把代码片段与准确的文件路径、符号名及所解释的语句对应起来。
-- 页面中的模型、工具、语音、音频、设备和网络交互均标明为离线教学模拟，不调用真实模型 API、外部服务、语音后端或机器人。模拟结果只演示本课概念，不作为 Deskbot 真实运行证据。
-- 先把新知识讲清，再提供练习。自测和答案放入默认收起的可选折叠区；讲课不要求学生逐节回答后才能继续。学生读完页面、点击动画或展开答案，都不等于独立掌握；只有对话中的独立讲解、运行、定位或修改证据达到本课验收标准后，才更新 `progress.md`。
-- 浏览器存储只保留草稿或交互状态，不能代替 `progress.md`。浏览器中的 `localStorage` 也不代表内容已经写入本地课程文件或同步到远程仓库。只有实际验收后才由 AI 更新 `progress.md`；不从页面点击状态推断进度。
-- 小型概念课用页面交互即可，不为它另造 Python golden 脚本。只有需要验证数值结果的数学或算法课才考虑 Python 数值基准；工程课按真实输入、消息、状态、成功与失败路径核对。
+> **能访问本机仓库时（Claude Code / Codex / Cursor 等本地 Agent）：**
+> ```text
+> 请接手我的 Deskbot 交互式课程阶段编写任务（模式 A：按阶段分批生成）。
+> 先依次阅读：
+> 1. 仓库根目录 AGENTS.md（遵守 course/ 与 references/ 只读规则）
+> 2. workspace/deskbot-learning/HANDOFF.md 与 AUTHORING_STATUS.md
+> 3. workspace/deskbot-learning/syllabus.md、source-map.md、improvement-roadmap.md、ai-authoring-guide.md
+> 4. 已有的 workspace/deskbot-learning/lessons/M00.01.html 与 assets/（参考视觉与交互风格，注意不要破坏 M00.01）
+>
+> 我是完全零基础学习者，日常在本地用模拟/浏览器环境学习，目标是彻底吃透并改进 /home/yyy/desktop/ai/Deskbot/server/voice 用于深圳 Agent 岗求职。
+> 请从 AUTHORING_STATUS.md 当前待编写的阶段开始，**只完整生成当前这 1 个阶段内的全部课程（lessons/Mxx.yy.html + exercises/Mxx.yy/ 实验与答案）**，严禁跨阶段把后面所有阶段一次性写完（因为学完本阶段我会修改 Deskbot 源码）。
+>
+> 每课必须：从零拆解本课首讲语法、提供可离线点击的交互模拟器、现场读取并核对当前最新的 Deskbot 真实源码与行号、提供可验证的离线 Python 小实验、默认折叠的故障练习与验收标准。每完成一课校验 JS/Python 语法与链接，全部完成后更新 index.html 与 AUTHORING_STATUS.md 并在阶段边界停下向我汇报。
+> ```
 
-## 一课的编写流程
+> **无法访问本机仓库时（网页版 AI）：**
+> ```text
+> 我正在按一套 38 课的螺旋式大纲从零基础学习并改进 Deskbot 语音 Agent 项目。我将上传 syllabus.md、ai-authoring-guide.md 和 M00.01.html 样式参考。
+> 请每次只帮我生成我指定的那 1 课（或当前阶段内不依赖未提供源码的基础课）的完整交互式 HTML 与配套 Python 练习。凡涉及真实项目源码走读的课，请先明确列出需要我粘贴给你的 Deskbot 具体文件路径，拿到真实源码前绝不编造代码、函数名或行号。
+> ```
 
-1. **锁定一课。** 从 syllabus 取现有课号、标题、目标、前置和验收要求；报告本课只解决的一个主要问题。若前置缺失，先补刚好够用的桥接微课，可按syllabus使用M07.04-B1这样的附属编号；若 syllabus 本身缺项，提出待补项，不假装已有安排。
-2. **给零基础搭桥。** 明确先决知识。对本课出现的术语先用日常语言定义；对新 Python、JavaScript、SQL、HTML/CSS或命令行语法，逐行解释最小实验实际用到的部分。解释本课要读的真实函数时，按语句组说明输入、调用、状态变化和输出。大文件分课读完，并在源码覆盖记录中标出已读和剩余符号，不能用“理解整体即可”跳过其余实现。
-3. **先做离线最小实验。** 设计一个可复制运行的小实验或页面内可操作场景，优先用 fake/stub 和已有测试假件，不下载模型、不消耗付费 API、不控制硬件。给出准确目录、运行命令、预期可见输出以及每行关键语法的解释。只有数学或算法课确实要核对数值时才增加 Python 数值验证；概念课不为了动画另造 golden 脚本。代码练习放在 `workspace/deskbot-learning/exercises/`；真实服务源码改动须对应用户明确的目标范围。
-4. **从实验连到源码。** 沿一个真实入口追到当前课目标函数，说明数据如何经过函数、队列、会话状态、provider、MCP 或记忆到达下一步。每个重要决定都解释 what、why、how，并说清当前实现的边界。区分“当前已实现”“配置开启时才启用”“设计建议”“尚未验证”。只讲可观察的协议消息、日志、断言和指标，不展示或索取隐藏思维链。
-5. **让学生定位故障。** 给一个范围小、可复现的故障练习：说明起始状态、要观察的日志/断言、预期行为和需要学生解释的问题。先给分层提示，再在默认收起的“参考答案”区给答案与依据；提示不要直接泄出答案。练习自愿进行，讲课不能卡在每个小节等待作答。
-6. **准备验收。** 教材制作时写出讲回问题、预测题、可判定标准和参考答案，完成后继续下一课。日后教学时，再在学生准备好时收集独立讲解、运行或修改证据。例如能解释入口、状态变化、成功输出和一种失败分支。只有实际达到标准才将学习进度记为“已验收”；读课、点击交互和看答案本身不算掌握证据。
-7. **留可复用成果。** 课文默认保存到 `workspace/deskbot-learning/lessons/Mxx.yy.html`，实验放 `exercises/Mxx.yy/`；已有 `M00.01.md` 保留为原始讲稿。更新 `index.html` 时只链接已经存在的页面，其余标为“未生成”。记录本课源码路径与已读符号、实验命令、验收证据和下一步；课程编号和目标沿用 syllabus。只生成教材时，学习状态仍为未学；学生理解并能解释的改进才可作为求职项目成果，不把 AI 生成代码的数量当作个人掌握证据。
+### 提示词 2：让 AI 当你的随堂陪读与实战改造导师（模式 B · 逐课学习验收）
 
-8. **检查页面。** 核对 HTML 到 CSS、JS、目录页和课程内链接均为有效相对路径；检查 JS 语法与交互的正常、重置及自测状态；在桌面和窄屏手机宽度看一遍布局。验证只需本地浏览器和小型脚本/开发者工具，不安装大型教学平台。无数值基准需求的概念课不增加 golden 校验。
-
-如果一课内容过长，沿用同一课号分成概念、源码、练习等连续部分，并记下准确续写位置；不能以输出长度为由省略源码路径或实验步骤。通用基础课可以使用很短的自造例子，项目结论必须回到当前源码。每个模块完成后更新source-map的函数覆盖记录，核对还有哪些自有函数、分支或脚本尚未教学。
-
-## 运行与改动边界
-
-课程前段以 fake 和单元测试为主，避免要求先装 ASR/VAD 模型或使用真实 API。只有当前课需要完整链路时，才进入第二阶段：本机配置允许的真实模型/服务加浏览器测试桥；先说明依赖、网络和可能费用。实机作为后续阶段，依据现有固件和协议讲解；真实硬件控制、刷写、部署、服务重启或有费用的外部调用，只有在已有明确授权时才执行，否则先完成代码、命令和预期结果等可审查准备，并具体说明需要授权的动作。普通读代码、可逆本地实验和按已授权范围的修改无需逐步重复确认。
-
-写运行命令时先查 `requirements.txt`、README 和当前环境。当前已记录的本机 Python 为 3.11.16，基线曾通过 383 项 Python 测试与 16 项浏览器测试；此记录可能过时，讲课前核实当前仓库/运行日志，不把历史基线写成当前测试结果。涉及公开 GitHub 或公开展示时，先核实 Deskbot 根仓库的 LICENSE 状态及上游许可；未查清前不声称项目已获公开再发布许可。本地学习不受此项阻塞。
-
-## 进度记录
-
-将学习进度写到 `workspace/deskbot-learning/progress.md`，每课一条。状态只用：`未学`、`学习中`、`需补`、`已验收`。
-
-```markdown
-### <syllabus 中的 lesson id> · <标题>
-- 状态：未学 | 学习中 | 需补 | 已验收
-- 可独立完成证据：<学生独立解释、运行、定位或修改了什么；附可观察证据>
-- 尚缺：<没有则写“无”>
-- 下一步：<syllabus 中下一课或需要的桥接微课>
-- 源码核对日期：YYYY-MM-DD（记录当前分支及相关源码是否有未提交变化；不记录哈希）
-```
-
-进度反映能力证据，不以读完课文、点击页面或 AI 代写完成算验收。HTML 页面里的浏览器草稿与交互状态不写入此文件，也不证明本地课程文件或远程仓库已同步。只有实际验收后才更新 `progress.md`。若源码变化影响结论，回到相关 lesson 核对，不必重学无关内容。
-
-## 可复制给其他 AI 的提示词
-
-**批量完成全部教材：** 使用[HANDOFF.md](HANDOFF.md)末尾的指令，从AUTHORING_STATUS继续，完成全部90课。本节下面两段是日常教学陪读指令，不能用它们缩小已经授权的全套教材任务。
-
-**AI 能访问本地仓库时：**
-
-```text
-我从零基础学习 Deskbot agent，目标是掌握 /home/yyy/desktop/ai/Deskbot/server/voice，并把理解、改进和验证过的成果用于深圳 agent 求职。请先读取本仓库的 AGENTS.md、workspace/deskbot-learning/ai-authoring-guide.md、workspace/deskbot-learning/syllabus.md，以及已存在的 improvement-roadmap.md 和 progress.md。只生成 syllabus 中当前下一课，不生成整本教材；沿用 M00–M15 的课程编号和顺序。
-
-本课先说明前置知识，逐行解释所需的零基础术语与 Python/网页语法；给出离线 fake/stub 最小实验或可操作场景、真实源码函数的数据流、可选故障练习、分层提示、独立参考答案和可判定的讲回验收。课程页面默认输出为 workspace/deskbot-learning/lessons/Mxx.yy.html，引用本课程 assets/ 中的相对 CSS/JS；保留已有 M00.01.md 原始讲稿。HTML必须有完整讲解正文，一个概念对应可操作场景；工程课展示状态/消息流、成功与失败对照，真实代码对应准确路径与符号。练习和答案可折叠，讲授不强制逐节问答；读课、点击交互和展开答案不算掌握。页面内模型、工具与音频全是离线教学模拟，不调用真实服务。浏览器只存草稿/交互状态，progress.md只按实际验收证据更新；localStorage不代表内容已写入repo或远程同步。index.html仅链接已生成课程，未生成课程明确标注，不做失效链接。检查相对资源路径、JS语法与交互状态、desktop/mobile布局，不安装大型教学平台。按指南核对当前源码、测试、配置、固件接口及文档，不用 README/注释代替实现证据；准确标注路径/符号/当前行号。默认不调用付费 API、不控制实机。实验代码放 workspace/deskbot-learning/exercises；不改 course 或其他现有源文件，真实服务源码改动只按我明确给的范围。只记录可观察的协议消息、日志和测试证据，不展示隐藏思维链。完成后给本课内容及进度记录建议。
-```
-
-**AI 无法访问本地仓库时：**
-
-```text
-我从零基础学习 Deskbot agent，目标是掌握 server/voice 并准备深圳 agent 求职。请一次只编写 syllabus 中当前一课。你无法访问我的本地仓库，因此先告诉我本课所需的具体源码、配置示例和对应测试路径，请我粘贴相关内容或提供文件；拿到代码前，可先补通用术语/语法桥接内容，但不要声称已读源码，不得编造文件路径、符号、行号、实现状态或测试结果。缺源码证据时，把项目判断标为待核实。
-
-拿到材料后，按 ai-authoring-guide.md 的课型，产出 workspace/deskbot-learning/lessons/Mxx.yy.html，并使用本课程 assets/ 下的相对资源；保留现有 M00.01.md 原稿。正文须从前置知识开始完整讲解，包含离线可操作场景、真实函数数据流、可选故障练习、折叠提示/答案和可判定验收；工程课对照状态/消息成功与失败流。模型、工具和音频交互是离线教学模拟，不调用真实服务。讲课不强制逐节问答；点击或读课不算掌握。浏览器草稿/交互状态不等于写入repo或远程同步，progress.md只按实际验收证据更新。遵循 syllabus 编号，不另开课程；优先本地假件，不要求付费 API 或实机。练习代码放 workspace/deskbot-learning/exercises。只用可观察消息/日志/测试说明行为，不展示隐藏思维链。
-```
+> ```text
+> 请作为我的 Agent 导师（模式 B：交互式陪读与实战改造），先阅读仓库根 AGENTS.md、workspace/deskbot-learning/syllabus.md、improvement-roadmap.md 和 progress.md。
+> 查看 progress.md 中我当前正在学的课号：先带我检查本课核心概念与练习完成情况，用苏格拉底提问检验我是否真正读懂了语法与源码数据流；如果本课是 PR 实战改造课，请按“先复现问题与基线 → 最小代码改动 → 跑 pytest 验证 → 让我用自己的话讲回原理”四步带我实操。验收真正达标后再更新 progress.md，并按 AGENTS.md 规范记录本次问答到 questions/。
+> ```

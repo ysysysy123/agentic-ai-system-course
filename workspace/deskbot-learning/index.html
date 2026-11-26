@@ -1,32 +1,185 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Deskbot 学习室 · 从零学会自己的 Agent 项目</title><link rel="stylesheet" href="assets/lesson.css"></head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dk:lesson" content="portal">
+<meta name="dk:home" content="index.html">
+<title>Deskbot 学习室 · 38课螺旋式边学边改 Agent 实战</title>
+<link rel="stylesheet" href="assets/deskbot-course.css">
+</head>
 <body>
-<div class="lesson-layout">
-<aside class="lesson-sidebar"><a class="brand" href="index.html">DESKBOT <span>学习室</span></a><p class="small muted">从零读懂自己的 Agent 项目</p><nav class="sidebar-links" aria-label="学习导航"><a href="#start">开始学习</a><a href="#how">这套课程怎样学</a><a href="#courses">完整课程目录</a><a href="#references">课程设计与记录</a></nav><div class="status-note"><strong>电脑与浏览器先行</strong><p class="small">先读懂并运行 server/voice，再接真实机器人。其他模块讲清接口和运行方式。</p></div></aside>
-<main class="lesson-main">
-<header class="home-hero" id="start"><p class="eyebrow">项目就是你的实验室</p><h1>从零学会自己的<br>Agent 项目。</h1><p class="subtitle">把声音、模型、工具和记忆拆开看懂，再一步步把它们连成一个你能独立开发和改进的系统。</p><div class="tag-row"><span class="tag">零基础起步</span><span class="tag">85课主线 + 5课选修</span><span class="tag">目前已编写1课</span></div><div class="home-links"><a class="button button-primary" href="lessons/M00.01.html">开始 M00.01 →</a><a class="button button-quiet" href="#courses">查看完整目录</a></div></header>
-<div class="win"><strong>第一课 · 项目到底解决什么问题</strong><p>用分步演示看清：你说出一句话后，谁接收声音、谁生成回答、谁让声音真正播放。切换为文字输入，观察可以跳过哪些环节。</p></div>
-<section id="how"><h2 class="section-heading"><span class="section-no">01</span>读解释，动手看，再回到代码</h2><div class="comparison-grid"><article class="concept-card"><h3>交互课程</h3><p>完整讲解、分步流程、输入条件对照、真实源码联动和可选自测。页面中的模拟可离线操作。</p></article><article class="concept-card"><h3>真实实验</h3><p>学到编程后，在电脑上运行小程序和项目代码，观察日志、修复问题，用实际结果验证理解。</p></article></div><p>课堂阅读与自主练习分开安排。你可以先完整学习，再根据需要自测和讲回。阅读进度、选择题结果和独立开发能力各有不同的证据。</p><p class="small muted">课程掌握记录以 progress.md 中经过验收的证据为准。浏览器草稿只保留在当前浏览器，不会自动改动文件或上传 GitHub。</p></section>
-<section id="courses"><h2 class="section-heading"><span class="section-no">02</span>完整路线，每次走一课</h2><p>展开一个模块查看课题。第一课已有可阅读页面，其余按学习进度逐课编写；“待编写”条目没有生成空页面。</p>
-<details open><summary>M00 · 从零认识电脑、程序与项目 <span class="small muted"> / 4课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M00.01</span><h3><a href="lessons/M00.01.html">项目到底解决什么问题</a></h3></div><span class="tag">可以开始</span></li><li class="course-item"><div><span class="eyebrow">M00.02</span><span>文件、目录与终端</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M00.03</span><span>Python解释器与依赖环境</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M00.04</span><span>用实验而非复制判断学会</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M01 · 用Deskbot小例子学习Python基本语法 <span class="small muted"> / 7课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M01.01</span><span>值、变量与基本类型</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.02</span><span>字符串与用户输入</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.03</span><span>判断与分支</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.04</span><span>列表、元组、字典与集合</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.05</span><span>循环与计数</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.06</span><span>函数、参数与返回值</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M01.07</span><span>把基础组合成文本助手</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M02 · 读懂多文件Python工程 <span class="small muted"> / 6课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M02.01</span><span>模块、包与程序入口</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M02.02</span><span>类、对象与实例状态</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M02.03</span><span>dataclass、Enum与类型标注</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M02.04</span><span>Protocol与可替换组件</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M02.05</span><span>异常、资源与上下文管理</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M02.06</span><span>第一次读测试与调试</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M03 · 文件、数据表示与配置 <span class="small muted"> / 4课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M03.01</span><span>文本、字节与序列化</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M03.02</span><span>文件路径与结构化配置</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M03.03</span><span>环境变量与配置优先级</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M03.04</span><span>命令行、日志与兼容性</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M04 · 从本机通信学HTTP与WebSocket <span class="small muted"> / 5课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M04.01</span><span>客户端、服务器与端口</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M04.02</span><span>一次HTTP请求和响应</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M04.03</span><span>WebSocket为什么适合语音</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M04.04</span><span>应用协议、会话和关联ID</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M04.05</span><span>连接问题的分层定位</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M05 · 异步、流式、队列与取消 <span class="small muted"> / 6课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M05.01</span><span>同步、异步与事件循环</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M05.02</span><span>Task、Future与共享状态</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M05.03</span><span>迭代器、生成器与流式输出</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M05.04</span><span>队列、背压与流水线</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M05.05</span><span>取消、超时与资源清理</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M05.06</span><span>线程、子进程与阻塞边界</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M06 · 完整追踪服务启动与一轮对话 <span class="small muted"> / 5课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M06.01</span><span>应用组装与依赖注入</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M06.02</span><span>监听器启动与关闭</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M06.03</span><span>连接变成会话</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M06.04</span><span>一轮文本到语音的主流程</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M06.05</span><span>失败、打断和部分回复</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M07 · 从模型调用到可解释的Agent循环 <span class="small muted"> / 7课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M07.01</span><span>语言模型如何参与软件</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.02</span><span>消息、提示词与上下文组装</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.03</span><span>从服务响应读流式文本</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.04</span><span>一次工具调用的四步</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.05</span><span>多轮工具循环与终止</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.06</span><span>确定性路径、错误与事实陈述</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M07.07</span><span>独立实现最小文本Agent</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M08 · SQLite、短期上下文与长期记忆 <span class="small muted"> / 6课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M08.01</span><span>数据库与SQL从零开始</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M08.02</span><span>记忆数据模型与一致性</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M08.03</span><span>短期上下文与长度预算</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M08.04</span><span>历史召回与排序</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M08.05</span><span>摘要和事实整理的生命周期</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M08.06</span><span>记住、纠正、忘掉与重连</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M09 · 读懂完整音频链路 <span class="small muted"> / 7课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M09.01</span><span>声音如何变成数据</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.02</span><span>Opus编解码与音频边界</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.03</span><span>VAD如何决定开始和结束</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.04</span><span>ASR与模型推理边界</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.05</span><span>回复分句与TTS</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.06</span><span>FFmpeg与流式转码</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M09.07</span><span>端到端音频流水线与延迟</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M10 · 网页测试台与浏览器音频 <span class="small muted"> / 6课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M10.01</span><span>HTML、CSS与网页结构</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M10.02</span><span>JavaScript语言与事件</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M10.03</span><span>Promise、fetch与WebSocket客户端</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M10.04</span><span>麦克风、WebAudio与Worklet</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M10.05</span><span>持续对话、摄像头与打断</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M10.06</span><span>浏览器接真实语音服务</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M11 · MCP、视觉、设备工具与管理接口 <span class="small muted"> / 7课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M11.01</span><span>MCP与JSON-RPC的角色</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.02</span><span>设备工具发现与会话绑定</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.03</span><span>摄像头与视觉模型</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.04</span><span>运动指令、状态回执与打断</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.05</span><span>点歌与独立音乐网关</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.06</span><span>健康、OTA配置与管理API</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M11.07</span><span>与其他Deskbot模块对接</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M12 · 测试、评估、日志与性能证据 <span class="small muted"> / 6课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M12.01</span><span>逐类读完测试套件</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M12.02</span><span>真实WebSocket集成与浏览器测试</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M12.03</span><span>Trace与日志中的因果关系</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M12.04</span><span>任务评估集与评分</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M12.05</span><span>延迟、资源与成本测量</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M12.06</span><span>基线对照与CI回归</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M13 · 边学边改的项目实践 <span class="small muted"> / 5课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M13.01</span><span>选定一个可用的助手场景</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M13.02</span><span>补齐可观察的文字任务入口</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M13.03</span><span>只读工具错误的受控修复</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M13.04</span><span>选择一个有证据的体验改进</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M13.05</span><span>从浏览器迁移到真实机器人</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M14 · 独立维护、交付与求职表达 <span class="small muted"> / 4课 · 主线</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M14.01</span><span>环境复现与日常运行</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M14.02</span><span>读变更、定位故障与维护</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M14.03</span><span>求职证据包与真实贡献</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M14.04</span><span>毕业考核与岗位迁移</span></div><span class="small muted">待编写</span></li></ol></details>
-<details><summary>M15 · 掌握主线后的Agent进阶选修 <span class="small muted"> / 5课 · 选修</span></summary><ol class="course-list"><li class="course-item"><div><span class="eyebrow">M15.01</span><span>语义检索与RAG扩展</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M15.02</span><span>规划、框架与多Agent</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M15.03</span><span>任务持久化与主动助手</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M15.04</span><span>更大规模服务与运维</span></div><span class="small muted">待编写</span></li><li class="course-item"><div><span class="eyebrow">M15.05</span><span>模型原理与持续改进</span></div><span class="small muted">待编写</span></li></ol></details>
-</section>
-<section id="references"><h2 class="section-heading"><span class="section-no">03</span>课程设计与学习记录</h2><ul><li><a href="HANDOFF.md">完整教材制作交接</a>：让另一AI连续完成全部90课。</li><li><a href="AUTHORING_STATUS.md">教材制作进度</a>：已校验课文和下一项编写任务。</li><li><a href="syllabus.md">完整课程大纲</a>：每课的前置知识、源码、实验与验收。</li><li><a href="source-map.md">源码覆盖地图</a>：server/voice 文件的职责和课程归属。</li><li><a href="improvement-roadmap.md">系统差距与改进路线</a>：从可用到好用，再形成求职作品。</li><li><a href="ai-authoring-guide.md">教材编写说明</a>：其他AI继续生成HTML课程时的要求。</li><li><a href="progress.md">学习记录</a>：保留真实理解证据和下一步。</li></ul><div class="callout"><strong>继续编写下一课时</strong><p>让讲课AI读取课程大纲、教材编写说明和当前学习记录，再生成对应课号的HTML。讲真实实现前，先读取Deskbot对应源码。</p></div></section>
-<footer class="lesson-footer">Deskbot 学习室 · 本地课程入口 · 2026-11-26<br>教学形式参考你的 AI Lab；知识与实现依据当前 Deskbot 项目。</footer>
-</main></div>
-</body></html>
+<div class="dk-layout portal-layout">
+  <nav id="dk-toc" aria-label="课程总览导航"></nav>
+
+  <main class="dk-main">
+    <header class="dk-hero">
+      <p class="eyebrow">DESKBOT AGENT LAB · 零基础到深圳 Agent 岗求职作品</p>
+      <h1>从零吃透并亲手升级<br>你的语音 Agent 系统</h1>
+      <p class="subtitle">不搞枯燥的前置语法马拉松：5 课打通最小够用 Python，第 2 阶段直入 Agent 循环与记忆核心，边学边落地 5 个硬核工程 PR，最后用 30 条自动化评测打包成能扛住 5 层追问的求职作品。</p>
+      <div class="chips">
+        <span class="chip whitebox">🌱 完全零基础拆桥</span>
+        <span class="chip pr">🔥 5 大求职级实战 PR</span>
+        <span class="chip sim">🧪 本地模拟为主 · ESP32 实机选做</span>
+        <span class="chip">📦 已生成 5 / 38 课（M00 全阶段就绪）</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px">
+        <a class="dk-btn primary" href="lessons/M00.01.html" style="padding:10px 18px;font-size:14px">🚀 立即进入第 1 课（M00.01 样板课）→</a>
+        <a class="dk-btn" href="#curriculum" style="padding:10px 16px;font-size:14px">查看 6 阶段 · 38 课地图</a>
+        <a class="dk-btn" href="HTML_DESIGN_RULES.md" style="padding:10px 16px;font-size:14px">🎨 HTML 模板与生成规则</a>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">✨</div>
+      <div>
+        <h4>为什么这套课采用「按阶段滚动生成 HTML」？</h4>
+        <p>你在 <code>M01</code>、<code>M02</code>、<code>M03</code>、<code>M05</code> 都会亲手重构 <code>Deskbot/server/voice</code> 源码。每次让 AI 只生成当前阶段的 5–8 课交互式 HTML，学完改完代码后再基于最新源码生成下一阶段——<strong>彻底告别“代码改了、后面几十课行号全过期”的静态教材陷阱。</strong></p>
+      </div>
+    </div>
+
+    <!-- ========== §01 学习与改造闭环 ========== -->
+    <section>
+      <h2><span class="num">01</span>每节课怎么学、怎么验收？</h2>
+      <div class="grid-2">
+        <article class="info-card">
+          <h3>🔤 零基础语法即时拆桥 + 交互推演</h3>
+          <p>所有首次出现的 Python / SQL / <code>asyncio</code> / 正则语法都在当课通过双栏 <code>.syntax-bridge</code> 用 5 行极简例子拆透，配合 SVG 状态流转沙盒与双栏聚光灯源码走读（<code>.code-walk</code>）。</p>
+        </article>
+        <article class="info-card">
+          <h3>🛠️ 本地离线实验 + 5 大求职级 PR</h3>
+          <p>日常实验全部在 <code>exercises/</code> 下离线可跑；核心模块逐行白盒重构（<code>ToolRegistry</code>、分级自愈、Prefix Cache、FTS5+RRF 检索、<code>TurnTrace</code> 与 30 例 Eval），外围音频与前端按灰盒排障高效掌握。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== §02 六阶段 38 课目录 ========== -->
+    <section id="curriculum">
+      <h2><span class="num">02</span>六个阶段 · 38 课螺旋式地图</h2>
+      <p class="small muted">蓝色标题为已生成并通过自动化语法校验的交互式课程；“待生成”课程可按 <code>HANDOFF.md</code> 交给任意 AI 分阶段一键扩写。</p>
+
+      <details class="stage-card" id="M00" open>
+        <summary>
+          <span>阶段 0 · M00 零基础破冰与最小够用 Python</span>
+          <span class="chip sim">5 课 · Batch 0（已全部就绪 5/5 ✓）</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M00.01</span><a href="lessons/M00.01.html">项目到底解决什么问题（新模板样板课）</a></div><span class="chip sim">可开始学习</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M00.02</span><a href="lessons/M00.02.html">文件、目录、终端与你的第一个 Python 程序</a></div><span class="chip sim">已就绪</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M00.03</span><a href="lessons/M00.03.html">分支、列表与字典——亲手拼出大模型看懂的消息</a></div><span class="chip sim">已就绪</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M00.04</span><a href="lessons/M00.04.html">循环、函数与异常——写出最小模拟工具调度器</a></div><span class="chip sim">已就绪</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M00.05</span><a href="lessons/M00.05.html">模块导入、JSON/YAML 配置与你的第一个 pytest 单元测试</a></div><span class="chip sim">已就绪</span></li>
+        </ol>
+      </details>
+
+      <details class="stage-card" id="M01">
+        <summary>
+          <span>阶段 1 · M01 纯文本直入 Agent 大脑：工具契约、循环与自愈</span>
+          <span class="chip pr">8 课 · 落地 PR-1 &amp; PR-2</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.01</span><span>类、dataclass 与 Protocol——读懂 DialogueBackend 解耦契约</span></div><span class="muted small">待生成 · Batch 1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.02</span><span>流式生成与 OpenAICompatibleLLMProvider——大模型怎样吐出文字和工具请求</span></div><span class="muted small">待生成 · Batch 1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.03</span><span>搭建免麦克风的 Agent 文字调试台（你的第一件趁手兵器）</span></div><span class="muted small">待生成 · Batch 1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.04</span><span>逐行解剖 camera_dialogue.py（上）：有界工具循环与文字缓冲权衡</span></div><span class="muted small">待生成 · Batch 1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.05</span><span>逐行解剖 camera_dialogue.py（下）：正则快捷通道为什么会静默吞掉复合指令？</span></div><span class="muted small">待生成 · Batch 1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.06</span><span>【实战改造 PR-1】抽出统一 ToolRegistry 与校验管道，修复复合指令丢步</span></div><span class="chip pr">PR-1</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.07</span><span>【实战改造 PR-2】升级 AgentDialogueBackend：分级错误自愈、Doom-Loop 防护与 stop_reason</span></div><span class="chip pr">PR-2</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M01.08</span><span>阶段 1 闭卷通关：关掉 AI，独立手写最小工具型 Agent</span></div><span class="muted small">🛑 Gate 1</span></li>
+        </ol>
+      </details>
+
+      <details class="stage-card" id="M02">
+        <summary>
+          <span>阶段 2 · M02 上下文工程、SQLite 与长期记忆升级</span>
+          <span class="chip pr">7 课 · 落地 PR-3(上) &amp; PR-4</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.01</span><span>SQLite 与 SQL 从零开始——对话和排除表是怎么落盘持久化的</span></div><span class="muted small">待生成 · Batch 2</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.02</span><span>短期上下文预算与【实战改造 PR-3（上）】Prompt Prefix Cache 分层优化</span></div><span class="chip pr">PR-3 上</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.03</span><span>读懂 consolidation.py：事实版本化、溯源校验与明确记住/遗忘治理</span></div><span class="muted small">待生成 · Batch 2</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.04</span><span>读懂 MemoryService：空闲后台整理、并发锁与代际取消机制</span></div><span class="muted small">待生成 · Batch 2</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.05</span><span>剖析现有历史召回瓶颈：8 词二字切分 + SQL LIKE 为什么会漏召回？</span></div><span class="muted small">待生成 · Batch 2</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.06</span><span>【实战改造 PR-4】落地混合记忆检索（SQLite FTS5 + 轻量向量 + RRF 融合）与安全过滤</span></div><span class="chip pr">PR-4</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M02.07</span><span>阶段 2 闭卷通关：记忆全链路白板推演与故障修复考核</span></div><span class="muted small">🛑 Gate 2</span></li>
+        </ol>
+      </details>
+
+      <details class="stage-card" id="M03">
+        <summary>
+          <span>阶段 3 · M03 异步并发、WebSocket 协议与实时语音会话引擎</span>
+          <span class="chip pr">7 课 · 落地 PR-3(下)</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.01</span><span>深入 asyncio 实战：有界队列背压、取消传播与阻塞隔离边界</span></div><span class="muted small">待生成 · Batch 3</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.02</span><span>服务组装与 WebSocket 握手：从 ServerApplication 到每连接会话隔离</span></div><span class="muted small">待生成 · Batch 3</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.03</span><span>逐行精读 VoiceSession（上）：输入音频流、预卷缓冲与 VAD 自动切句</span></div><span class="muted small">待生成 · Batch 3</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.04</span><span>逐行精读 VoiceSession（下）：流式分句、TTS 预取、抢话打断与部分回复保存</span></div><span class="muted small">待生成 · Batch 3</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.05</span><span>灰盒掌握语音性能测量工具链：阶段耗时拆解与 P50 / P95 统计</span></div><span class="muted small">待生成 · Batch 3</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.06</span><span>【实战改造 PR-3（下）】优化“开启工具后普通闲聊首字卡顿”的流式体验</span></div><span class="chip pr">PR-3 下</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M03.07</span><span>阶段 3 闭卷通关：全链路语音状态流转与疑难日志排障</span></div><span class="muted small">🛑 Gate 3</span></li>
+        </ol>
+      </details>
+
+      <details class="stage-card" id="M04">
+        <summary>
+          <span>阶段 4 · M04 浏览器测试台、MCP 桥接与全项目外围模块贯通</span>
+          <span class="chip greybox">5 课 · 模拟必做 + 实机选做</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M04.01</span><span>灰盒读懂浏览器测试台：前端事件、WebAudio 桥接与双进程本机联调</span></div><span class="muted small">待生成 · Batch 4</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M04.02</span><span>白盒精读两大 MCP 桥：CameraMCPBridge 与 DeviceMcpBridge</span></div><span class="muted small">待生成 · Batch 4</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M04.03</span><span>视觉链路与外部输入安全围栏：拍照分析、独立视觉模块与防间接注入</span></div><span class="muted small">待生成 · Batch 4</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M04.04</span><span>灰盒贯通全部剩余服务模块：管理 API、OTA 配置、点歌网关与部署样例</span></div><span class="muted small">待生成 · Batch 4</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M04.05</span><span>外围固件协议边界与「本地模拟必做 + ESP32 实机选做」端到端联调</span></div><span class="muted small">🛑 Gate 4</span></li>
+        </ol>
+      </details>
+
+      <details class="stage-card" id="M05">
+        <summary>
+          <span>阶段 5 · M05 可观测性、自动化 Eval 评测与深圳求职作品封装</span>
+          <span class="chip pr">6 课 · 落地 PR-5 &amp; 毕业答辩</span>
+        </summary>
+        <ol class="lesson-rows">
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.01</span><span>【实战改造 PR-5（上）】全链路 TurnTrace 与流式 Token / 成本账本</span></div><span class="chip pr">PR-5 上</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.02</span><span>【实战改造 PR-5（下）】构建 30 条自动化 Agent Eval 评测套件</span></div><span class="chip pr">PR-5 下</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.03</span><span>跑出「改前 vs 改后」量化对照实验与 CI 回归保护</span></div><span class="muted small">待生成 · Batch 5</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.04</span><span>用 Ch.22 设计画布撰写一页纸架构说明与技术复盘</span></div><span class="muted small">待生成 · Batch 5</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.05</span><span>深圳 Agent 岗简历项目包装与 2 分钟高密度演示打磨</span></div><span class="muted small">待生成 · Batch 5</span></li>
+          <li class="lesson-row"><div class="l-left"><span class="l-id">M05.06</span><span>毕业终极考核：关掉 AI 现场手写扩展 + 5 层深度模拟面试</span></div><span class="muted small">🎓 毕业通关</span></li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- ========== §03 模板、工具与交接文件 ========== -->
+    <section id="docs">
+      <h2><span class="num">03</span>课程工程规范、HTML 模板与辅助工具</h2>
+      <div class="table-wrap">
+        <table class="kv-table">
+          <thead>
+            <tr><th>文件 / 工具路径</th><th>用途说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="templates/lesson.html">templates/lesson.html</a></td><td>标准交互式单课 HTML 母版（内置 7 大教学板块占位与组件示例）。</td></tr>
+            <tr><td><a href="HTML_DESIGN_RULES.md">HTML_DESIGN_RULES.md</a></td><td>视觉组件速查表与 4 步建课校验铁律（<code>.syntax-bridge</code>、<code>.code-walk</code>、<code>tracePlayer</code> 等）。</td></tr>
+            <tr><td><a href="scripts/course_tool.py">scripts/course_tool.py</a></td><td>零依赖 CLI 工具：一键建课 <code>new</code>、真实源码行号提取 <code>snippet</code>、HTML/JS 自动化校验 <code>check</code>。</td></tr>
+            <tr><td><a href="syllabus.md">syllabus.md</a></td><td>6 阶段 · 38 课逐课大纲（含零基础首讲语法、源码范围与验收标准）。</td></tr>
+            <tr><td><a href="improvement-roadmap.md">improvement-roadmap.md</a></td><td>5 大求职级实战升级（PR-1～PR-5）设计与 30 条自动化评测题库。</td></tr>
+            <tr><td><a href="source-map.md">source-map.md</a></td><td><code>server/voice</code> 全部 117 个文件的白盒精改 / 灰盒排障归属表。</td></tr>
+            <tr><td><a href="HANDOFF.md">HANDOFF.md</a></td><td>交给其他 AI 按阶段滚动生成 HTML 课件的标准交接书与一键提示词。</td></tr>
+            <tr><td><a href="progress.md">progress.md</a></td><td>你的个人学习验收档案（仅在讲回与实操验收通过后更新）。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · Tufte 暖纸/深色双主题设计系统 · 2026-11-26</span>
+      <span>右上角可随时切换 🌓 深浅色主题</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/deskbot-course.js"></script>
+</body>
+</html>

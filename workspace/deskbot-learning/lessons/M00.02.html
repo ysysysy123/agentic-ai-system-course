@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dk:lesson" content="M00.02">
+<meta name="dk:module" content="M00">
+<meta name="dk:home" content="../index.html">
+<meta name="dk:date" content="2026-11-26">
+<title>M00.02 文件、目录、终端与你的第一个 Python 程序 · Deskbot 学习室</title>
+<link rel="stylesheet" href="../assets/deskbot-course.css">
+</head>
+<body>
+<div class="dk-layout">
+  <nav id="dk-toc" aria-label="本课目录"></nav>
+
+  <main class="dk-main">
+    <header class="dk-hero">
+      <div class="crumbs">
+        <a href="../index.html">📚 38课学习地图</a> /
+        <a href="../index.html#M00">M00 · 零基础破冰与最小够用 Python</a> /
+        <span>M00.02</span>
+      </div>
+      <p class="eyebrow">M00.02 · 零基础基石</p>
+      <h1>文件、目录、终端与你的第一个 Python 程序</h1>
+      <p class="subtitle">为什么同一条运行命令换个文件夹就报“找不到文件”？怎样亲手跑通第一段不靠死记硬背的 Python 代码？</p>
+      <div class="chips">
+        <span class="chip whitebox">🌱 零基础第 2 课</span>
+        <span class="chip sim">🧪 含路径解析沙盒 + 本地脚本</span>
+        <span class="chip">⏱ 约 22 分钟</span>
+        <span class="chip">📍 run.py · local_test.py · requirements*.txt</span>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">🎯</div>
+      <div>
+        <h4>本课唯一核心收获</h4>
+        <p>独立在终端里找到目录、跑通第一个 Python 脚本；彻底分清<strong>「终端命令」与「Python 代码」</strong>、<strong>「相对路径」与「<code>__file__</code> 锚定路径」</strong>，以及字符串 <code>"20"</code> 和整数 <code>20</code> 的本质差异。</p>
+      </div>
+    </div>
+
+    <div class="prereq">
+      <b>前置检查：</b>
+      <span class="known">✓ 已掌握：浏览器、语音服务、LLM 与工具的四大角色分工（M00.01）</span> ·
+      <span class="gap">△ 本课从零拆解：终端（pwd/ls/cd）、虚拟环境 .venv、变量赋值、5 种基本数据类型、print 与 f-string</span>
+    </div>
+
+    <!-- ========== §01 痛点与直觉 ========== -->
+    <section>
+      <h2><span class="num">01</span>问题引入：编辑器、终端和 Python 解释器到底是谁？</h2>
+      <p>零基础第一次写代码最容易犯的一个迷糊，就是<strong>把本该敲在黑色终端窗口里的命令（比如 <code>cd</code> 或 <code>python3 xxx.py</code>），写进了 <code>.py</code> 代码文件里</strong>，结果一运行就报 <code>SyntaxError</code>（语法错误）。</p>
+
+      <aside class="sidenote">
+        <strong>一句话防混铁律：</strong>凡是像 <code>pwd</code>、<code>ls</code>、<code>cd</code>、<code>pytest</code>、<code>git</code> 这样的操作指令，永远敲在<strong>终端（Terminal）</strong>里；<code>.py</code> 文件里只写给 Python 翻译官读的语法。
+      </aside>
+
+      <div class="callout intuition">
+        <span class="ct">写信 vs 跑腿送信（分清三个窗口）</span>
+        <ul>
+          <li><strong>源码文件（<code>.py</code> 纯文本文件）：</strong>就像一张写满步骤说明的纸，本身是静止的，放在硬盘上不会自己动。</li>
+          <li><strong>Python 解释器（<code>python3</code> 程序）：</strong>真正干活的“翻译执行官”。它从上到下逐行读你的 <code>.py</code> 文件，把指令翻译给电脑执行。</li>
+          <li><strong>终端（Terminal / Shell）：</strong>你向操作系统发号施令的对讲机。你在终端里敲 <code>python3 task.py</code>，意思就是喊操作系统：<em>“请叫醒 Python 翻译官，去执行当前文件夹下的 task.py！”</em></li>
+        </ul>
+      </div>
+
+      <h3>必须认识的 4 个终端高频词与虚拟环境（<code>.venv</code>）</h3>
+      <div class="table-wrap">
+        <table class="kv-table">
+          <thead>
+            <tr><th>命令 / 概念</th><th>干什么用？</th><th>在 Deskbot 项目里的真实意义</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>pwd</td><td>打印当前所在目录（Print Working Directory）</td><td>报错“找不到 <code>config.yaml</code>”时，第一步先敲 <code>pwd</code> 看自己站在哪个文件夹！</td></tr>
+            <tr><td>ls / cd 路径</td><td>列出当前目录文件 / 切换到另一个目录</td><td>相对路径（不以 <code>/</code> 开头）永远相对于你当前 <code>pwd</code> 站立的位置计算。</td></tr>
+            <tr><td>退出码 (Exit Code)</td><td>程序结束时交回给系统的整数：<code>0</code> 代表成功，非 <code>0</code> 代表出错</td><td><code>run.py</code> 里写的 <code>raise SystemExit(main())</code> 就是在向系统汇报退出码（配置错误返回 <code>2</code>）。</td></tr>
+            <tr><td>.venv 虚拟环境</td><td>给单个项目单独准备的“独立工具箱文件夹”</td><td><code>Deskbot/server/voice/.venv</code> 装好了专属的 Python 3.11 和 <code>pytest</code>，不会和电脑上别的项目打架。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== §02 零基础语法拆桥 ========== -->
+    <section>
+      <h2><span class="num">02</span>零基础拆桥：变量、5 种基本类型与 <code>f-string</code></h2>
+      <p>打开任何 Python 文件，最基础的砖块只有三样：<strong>给数据贴标签（变量）</strong>、<strong>区分数据长什么样（类型）</strong>、<strong>把数据拼成句子打印出来（<code>f-string</code>）</strong>：</p>
+
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 极简日常小例子（零前置）</span>
+          <pre data-file="变量与基本类型"><code class="language-python"># 井号 # 后面全是给人类看的注释，Python 会直接跳过
+name = "小桌"          # str 字符串：文字，必须用引号包起来
+port = 8000           # int 整数：不加引号，能做加减乘除
+threshold = 0.5       # float 小数：带小数点的数字
+mcp_on = False        # bool 布尔值：只有 True(真) 和 False(假)，首字母大写！
+err = None            # None：专门表示“空 / 暂时没有值”
+
+# 字符串前加字母 f，花括号 {变量名} 就会被自动替换成变量的值
+print(f"助手 {name} 监听端口：{port}，工具开启：{mcp_on}")</code></pre>
+          <p class="small"><strong>特别小心等号 <code>=</code>：</strong>在代码里 <code>port = 8000</code> 不是数学里的“相等”，而是<strong>“把右边的 8000 存进左边叫 port 的标签盒里”</strong>（判断相等以后用双等号 <code>==</code>）。</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · Deskbot 真实源码对照</span>
+          <pre data-file="local_test.py" data-start="19"><code class="language-python">    config = load_config(args.config)
+    print(f"浏览器测试页：http://{config.local_test.host}:{config.local_test.port}/")
+    print("测试页连接真实语音服务；请另开终端运行 run.py。Ctrl+C 停止测试页。")</code></pre>
+          <p class="small">看第 20 行：<code>f"http://{...}:{...}/"</code> 把配置里的主机地址（字符串 <code>"127.0.0.1"</code>）和端口号（整数 <code>8006</code>）拼成了一条可直接点击的网址！</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="ct">新手头号陷阱：<code>"20"</code>（字符串）不等于 <code>20</code>（整数）！</span>
+        <p>在环境变量和网页输入框里，读进来的数字默认全带引号（如 <code>"20"</code>）。<code>"20" + "5"</code> 会拼成字符串 <code>"205"</code>；而 <code>20 + "5"</code> 会直接触发 <code>TypeError</code> 崩溃！算数学前必须确认它是 <code>int</code> 或用 <code>int("20")</code> 转换。</p>
+      </div>
+    </section>
+
+    <!-- ========== §03 交互沙盒：当前目录 vs __file__ 路径解析 ========== -->
+    <section>
+      <h2><span class="num">03</span>动手推演：为什么 <code>run.py</code> 在哪运行都能找到代码，而配置路径却有讲究？</h2>
+      <p>切换下方两个场景，观察当你在不同文件夹敲命令时，<strong>普通相对路径 <code>Path("config.yaml")</code></strong> 与 <strong>脚本自身锚点 <code>Path(__file__).resolve().parent</code></strong> 的天壤之别：</p>
+
+      <div id="sim-path"></div>
+    </section>
+
+    <!-- ========== §04 真实源码聚光灯走读 ========== -->
+    <section>
+      <h2><span class="num">04</span>真实源码走读：读懂 <code>run.py</code>、<code>local_test.py</code> 与依赖清单</h2>
+      <p>现在你已经能够彻底看懂 Deskbot 根目录下的启动入口文件了！点击切换下方标签，再点击右侧编号卡片看每行代码到底在干什么：</p>
+
+      <div class="dk-tabs">
+        <div class="tab" data-label="1 · run.py（12 行启动语音服务）">
+          <div class="code-walk" data-dim>
+<pre data-file="run.py" data-start="1"><code class="language-python">"""Start the voice server from this directory without setting PYTHONPATH."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+
+from voice_server.__main__ import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())</code></pre>
+            <ol class="walk">
+              <li data-lines="1"><strong>三引号文档字符串</strong>：文件顶部的说明文字，告诉开发者这个脚本用来免配置直接启动语音服务。</li>
+              <li data-lines="3-6"><strong>用 <code>__file__</code> 锁定 <code>src</code> 目录</strong>：<code>Path(__file__).resolve().parent</code> 拿到 <code>run.py</code> 所在的文件夹，拼上 <code>/ "src"</code> 后塞进模块搜索列表第 0 号位——这样不管你在哪个目录调用 <code>run.py</code>，第 8 行都能找到 <code>voice_server</code>！</li>
+              <li data-lines="11-12"><strong>直接运行入口与退出码</strong>：当直接运行 <code>python run.py</code> 时执行 <code>main()</code>，并把它的整数返回值作为进程退出码交给系统（<code>0</code> 正常，<code>2</code> 配置错）。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tab" data-label="2 · local_test.py（启动浏览器桥接页）">
+          <div class="code-walk" data-dim>
+<pre data-file="local_test.py" data-start="10"><code class="language-python">def main() -&gt; None:
+    parser = argparse.ArgumentParser(description="Deskbot 本地语音测试页面")
+    parser.add_argument("--config", type=Path, default=Path(__file__).with_name("config.yaml"))
+    args = parser.parse_args()
+
+    from aiohttp import web
+    from voice_server.config import load_config
+    from voice_server.local_testing import create_local_test_app
+
+    config = load_config(args.config)
+    print(f"浏览器测试页：http://{config.local_test.host}:{config.local_test.port}/")
+    print("测试页连接真实语音服务；请另开终端运行 run.py。Ctrl+C 停止测试页。")
+    web.run_app(create_local_test_app(config), host=config.local_test.host, port=config.local_test.port, access_log=None)</code></pre>
+            <ol class="walk">
+              <li data-lines="12"><strong>对比细节（非常妙！）</strong>：<code>Path(__file__).with_name("config.yaml")</code> 表示“找和 <code>local_test.py</code> 同文件夹下的 <code>config.yaml</code>”，所以哪怕你在别的目录运行它也不会找错默认配置！</li>
+              <li data-lines="20-21"><strong>双进程关系明示</strong>：打印出 <code>8006</code> 测试页地址，并明确提醒你“测试页本身只是桥梁，真实对话需另开终端跑 <code>run.py</code>”。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tab" data-label="3 · requirements-test.txt（为什么先不装大模型也能做实验？）">
+          <div class="code-walk" data-dim>
+<pre data-file="requirements-test.txt" data-start="1"><code class="language-python"># Offline tests use fake model providers; no Torch/model downloads are needed.
+aiohttp==3.13.2
+edge-tts==7.3.1
+websockets==14.2
+PyYAML==6.0.3
+python-dotenv==1.2.1
+numpy==1.26.4
+opuslib_next==1.1.5
+pytest&gt;=8,&lt;9
+pytest-asyncio&gt;=0.23,&lt;2
+pytest-aiohttp&gt;=1.1,&lt;2</code></pre>
+            <ol class="walk">
+              <li data-lines="1"><strong>为什么前两阶段零模型下载负担？</strong>看第 1 行注释：离线测试使用假模型替身（Fake Providers），不需要先下载几个 GB 的 PyTorch 和语音识别权重就能验证全部 Agent 与状态逻辑！</li>
+              <li data-lines="2-11"><strong>版本号约束</strong>：<code>==</code> 锁定精确版本防升级破坏兼容；<code>&gt;=8,&lt;9</code> 允许大版本 8 内的安全小更新。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §05 本地动手实验 ========== -->
+    <section>
+      <h2><span class="num">05</span>本地动手实验：运行你的第一个设备状态脚本并制造一次报错</h2>
+      <p>打开你的电脑终端，直接复制下方命令运行我们已经为你准备好的实验脚本：</p>
+
+      <div class="terminal-lab">
+        <div class="term-head">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span>工作目录：/mnt/study/github/agentic-ai-system-course</span>
+        </div>
+        <div class="term-body">
+          <div class="cmd-row">
+            <span class="cmd-text">python3 workspace/deskbot-learning/exercises/M00.02/task.py</span>
+            <button class="copy-cmd" type="button">复制命令</button>
+          </div>
+          <div class="term-out">📍 脚本真实目录：M00.02
+🤖 设备编号：deskbot-sz-01 | 在线音量：65% | VAD阈值：0.5
+🔧 工具开关 mcp_enabled=False（类型：bool）
+🩺 最近错误：None
+🔊 调高后的音量：75%</div>
+        </div>
+      </div>
+
+      <div class="callout lab">
+        <span class="ct">动手小挑战（故意改坏一次，学会读报错最后一行！）</span>
+        <ol>
+          <li>用编辑器打开 <code>workspace/deskbot-learning/exercises/M00.02/task.py</code>，把第 25 行的 <code>volume_step = 10</code> 改成带引号的 <code>volume_step = "10"</code>，保存后再运行一次。</li>
+          <li>观察终端报错的最后一行（<code>TypeError: unsupported operand type(s) for +: 'int' and 'str'</code>），然后用 <code>int(volume_step)</code> 把它修好！</li>
+        </ol>
+      </div>
+
+      <details class="reveal hint">
+        <summary>卡住了？点开查看分层提示</summary>
+        <p><strong>提示 1：</strong>Python 报错堆栈（Traceback）总是把<strong>出错的文件名和行号</strong>写在倒数第 2 段，把<strong>真正的错误原因</strong>写在最后 1 行。</p>
+        <p><strong>提示 2：</strong>想把字符串 <code>"10"</code> 变成可相加的整数，只需写 <code>int(volume_step)</code>。</p>
+      </details>
+
+      <details class="reveal deep">
+        <summary>实验参考解法（核对 exercises/M00.02/solution.py）</summary>
+        <pre data-file="exercises/M00.02/solution.py"><code class="language-python">from pathlib import Path
+
+device_id = "deskbot-sz-01"
+volume = 65
+volume_step_str = "10"
+
+new_volume = min(100, volume + int(volume_step_str))
+print(f"安全转换相加后：{device_id} 当前音量 -&gt; {new_volume}%")</code></pre>
+      </details>
+    </section>
+
+    <!-- ========== §06 小结与面试表达 ========== -->
+    <section>
+      <h2><span class="num">06</span>本课浓缩与工程好习惯</h2>
+      <div class="callout summary">
+        <span class="ct">三句话记住本课精髓</span>
+        <ul>
+          <li><strong>分清战场：</strong><code>cd / ls / python3</code> 是敲给终端的命令；变量、<code>print</code>、<code>import</code> 才是写进 <code>.py</code> 的代码。</li>
+          <li><strong>路径防坑：</strong>普通相对路径跟着终端 <code>pwd</code> 跑；想稳稳找到脚本同级资源，用 <code>Path(__file__).resolve().parent</code>。</li>
+          <li><strong>类型敏感：</strong>永远留意手里拿的是文本 <code>str</code>、数字 <code>int/float</code>、开关 <code>bool</code> 还是空值 <code>None</code>。</li>
+        </ul>
+      </div>
+
+      <div class="callout interview">
+        <span class="ct">工程排查思维 · 面试加分表达</span>
+        <p>「遇到路径或模块导入报错时，我不会盲目改环境变量，而是先核查两点：一是进程启动时的当前工作目录（CWD），二是代码里的相对路径究竟是基于 CWD 还是基于 <code>Path(__file__).resolve()</code> 锚定的——例如在 Deskbot 的入口脚本中，<code>src</code> 搜索路径就是通过 <code>__file__</code> 锚定的，避免了跨目录启动找不到包的问题。」</p>
+      </div>
+    </section>
+
+    <!-- ========== §07 自测与讲回验收 ========== -->
+    <section>
+      <h2><span class="num">07</span>自测与通关讲回验收</h2>
+
+      <details class="reveal q">
+        <summary>可选快测：3 道零基础防坑题</summary>
+        <form class="dk-quiz">
+          <fieldset data-name="q1" data-answer="b" data-explain="带引号的是字符串 str，不带引号的 8000 是整数 int；在 Python 中两者类型不同，8000 == '8000' 的结果是 False。">
+            <legend>1. 在 Python 中，<code>port_a = "8000"</code> 和 <code>port_b = 8000</code> 有什么区别？</legend>
+            <label class="q-opt"><input type="radio" name="q1" value="a"> A. 完全一样，引号可加可不加</label>
+            <label class="q-opt"><input type="radio" name="q1" value="b"> B. <code>port_a</code> 是文本字符串（<code>str</code>），<code>port_b</code> 是整数（<code>int</code>），不能直接用 <code>+</code> 相加</label>
+            <label class="q-opt"><input type="radio" name="q1" value="c"> C. <code>port_b</code> 会报错，所有数字都必须加引号</label>
+          </fieldset>
+
+          <fieldset data-name="q2" data-answer="c" data-explain="cd 是终端（Shell）命令，不是合法的 Python 语法；写在 .py 文件里运行会直接报 SyntaxError。">
+            <legend>2. 新手在 <code>hello.py</code> 第一行写了 <code>cd /home/yyy</code>，运行时会发生什么？</legend>
+            <label class="q-opt"><input type="radio" name="q2" value="a"> A. Python 自动切换文件夹并继续运行</label>
+            <label class="q-opt"><input type="radio" name="q2" value="b"> B. 自动忽略这一行</label>
+            <label class="q-opt"><input type="radio" name="q2" value="c"> C. 报 <code>SyntaxError</code>，因为终端命令不能直接当 Python 语法写进 <code>.py</code> 文件</label>
+          </fieldset>
+
+          <fieldset data-name="q3" data-answer="a" data-explain="Path(__file__).resolve().parent 始终指向该 .py 文件自身躺在硬盘上的目录，与你在哪个终端目录敲命令无关。">
+            <legend>3. 为什么 <code>run.py</code> 里写 <code>Path(__file__).resolve().parent / "src"</code> 比直接写 <code>"src"</code> 更稳妥？</legend>
+            <label class="q-opt"><input type="radio" name="q3" value="a"> A. 因为 <code>__file__</code> 永远锁定 <code>run.py</code> 所在的真实文件夹，哪怕从上级目录启动也不会找错 <code>src</code></label>
+            <label class="q-opt"><input type="radio" name="q3" value="b"> B. 只是为了让代码看起来更长更专业</label>
+            <label class="q-opt"><input type="radio" name="q3" value="c"> C. 这样写可以自动下载缺失的第三方包</label>
+          </fieldset>
+          <button class="dk-btn primary" type="submit">核对判断与解析</button>
+        </form>
+      </details>
+
+      <div class="teachback-card" data-teachback>
+        <h3>📝 M00.02 通关讲回草稿箱</h3>
+        <label class="tb-field">
+          1. 用你自己的话说说：把 <code>volume_step = 10</code> 改成 <code>"10"</code> 后运行报了什么错？为什么？
+          <textarea data-field="type_err" placeholder="写下你在终端里亲眼看到的那句报错和原因…"></textarea>
+        </label>
+        <label class="tb-field">
+          2. 如果你在家目录 <code>/home/yyy</code> 直接敲 <code>python3 /home/yyy/desktop/ai/Deskbot/server/voice/run.py</code>，为什么它能找到 <code>voice_server</code> 包，却可能报找不到默认的 <code>config.yaml</code>？
+          <textarea data-field="cwd_vs_file" placeholder="提示：对比一下 run.py 里的 __file__ 和 __main__.py 里的 Path('config.yaml')…"></textarea>
+        </label>
+        <div class="tb-actions">
+          <button class="dk-btn primary" type="button" data-copy-teachback>📋 一键复制我的回答发给 AI 老师验收</button>
+          <span class="tb-status">草稿会自动保存在当前浏览器本地。</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="dk-nav" aria-label="课程前后导航">
+      <a href="M00.01.html"><small>← 上一课 · M00.01</small>项目到底解决什么问题</a>
+      <a class="next" href="M00.03.html"><small>下一课 · M00.03 →</small>分支、列表与字典——亲手拼出大模型看懂的消息</a>
+    </nav>
+
+    <div class="ask-ai">
+      💬 遇到任何报错直接贴给陪读 AI：<code>提交 M00.02 回答验收</code> · <code>帮我看下这行终端报错</code> · <code>进入 M00.03</code>
+    </div>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · M00.02 · 核对日期 2026-11-26</span>
+      <span><a href="../syllabus.md">课程大纲</a> · <a href="../source-map.md">源码地图</a></span>
+    </footer>
+  </main>
+
+  <aside class="dk-margin" aria-hidden="true"></aside>
+</div>
+
+<script src="../assets/deskbot-course.js"></script>
+<script>
+DeskCourse.ready(() => {
+  DeskCourse.tracePlayer("#sim-path", {
+    scenarios: [
+      {
+        label: "✅ 在 server/voice 目录下运行（一切正常）",
+        summary: "先 cd 进入 server/voice 目录再启动，当前工作目录（pwd）与配置文件所在目录一致：",
+        steps: [
+          {
+            role: "client", badge: "TERMINAL · pwd", state: "cwd = .../server/voice",
+            title: "1. 在终端进入项目子目录并执行 python run.py",
+            explain: "此时当前工作目录（CWD）就是 /home/yyy/desktop/ai/Deskbot/server/voice。",
+            data: "cd /home/yyy/desktop/ai/Deskbot/server/voice\n./.venv/bin/python run.py",
+            lang: "bash", source: "终端操作"
+          },
+          {
+            role: "server", badge: "__file__ 锚定 src", state: "sys.path 已注入",
+            title: "2. run.py 用 __file__ 找到同级的 src/ 文件夹",
+            explain: "Path(__file__).resolve().parent 解析为 .../server/voice，成功导入 voice_server.__main__。",
+            data: 'sys.path.insert(0, "/home/yyy/desktop/ai/Deskbot/server/voice/src")',
+            lang: "python", source: "run.py · L6"
+          },
+          {
+            role: "server", badge: "读取默认配置", state: "Exit Code = 0 (运行中)",
+            title: "3. __main__.py 按相对路径 Path('config.yaml') 成功读到配置",
+            explain: "因为当前站在 server/voice 目录，相对路径 'config.yaml' 正好指向 server/voice/config.yaml！",
+            data: 'Path("config.yaml").resolve() -> "/home/yyy/desktop/ai/Deskbot/server/voice/config.yaml"',
+            lang: "python", source: "src/voice_server/__main__.py · L23"
+          }
+        ]
+      },
+      {
+        label: "💥 站在上级目录裸跑（相对路径踩坑！）",
+        summary: "如果你站在 /home/yyy 没有 cd，直接运行远处的 run.py 且没传 --config 参数：",
+        steps: [
+          {
+            role: "client", badge: "TERMINAL · pwd", state: "cwd = /home/yyy",
+            title: "1. 当前站在 /home/yyy，跨目录调用 run.py",
+            explain: "注意：虽然脚本在 server/voice 里，但你的当前工作目录（pwd）仍然是 /home/yyy！",
+            data: "pwd  # 输出 /home/yyy\n/home/yyy/desktop/ai/Deskbot/server/voice/.venv/bin/python /home/yyy/desktop/ai/Deskbot/server/voice/run.py",
+            lang: "bash", source: "终端操作"
+          },
+          {
+            role: "server", badge: "__file__ 依然稳健", state: "导入成功 ✓",
+            title: "2. run.py 依然成功导入了 voice_server！（为什么？）",
+            explain: "因为 run.py 用的是 Path(__file__)——它认的是 run.py 文件自己的位置，不受你站在 /home/yyy 的影响！",
+            data: 'Path(__file__).resolve().parent -> "/home/yyy/desktop/ai/Deskbot/server/voice"',
+            lang: "python", source: "run.py · L6"
+          },
+          {
+            role: "error", badge: "ConfigError · 退出码 2", state: "Exit Code = 2", error: true,
+            title: "3. 但在读默认 Path('config.yaml') 时报错退出了！",
+            explain: "__main__.py 默认值写的是相对路径 Path('config.yaml')，它会去当前站立的 /home/yyy/config.yaml 找，自然找不到！（解决办法：要么先 cd 进去，要么显式传 --config 完整路径，或者像 local_test.py 那样用 Path(__file__).with_name('config.yaml')）。",
+            data: 'ERROR:voice_server.__main__:invalid voice server configuration\n# 进程返回退出码 2',
+            lang: "python", source: "src/voice_server/__main__.py · L23, L29-31"
+          }
+        ]
+      }
+    ]
+  });
+});
+</script>
+</body>
+</html>

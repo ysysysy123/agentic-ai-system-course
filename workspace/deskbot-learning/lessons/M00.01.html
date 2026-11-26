@@ -1,153 +1,493 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Deskbot 零基础课程第一课：分步观察声音、文字、模型与工具怎样构成一次完整交互。">
+<meta name="dk:lesson" content="M00.01">
+<meta name="dk:module" content="M00">
+<meta name="dk:home" content="../index.html">
+<meta name="dk:date" content="2026-11-26">
 <title>M00.01 项目到底解决什么问题 · Deskbot 学习室</title>
-<link rel="stylesheet" href="../assets/lesson.css">
-<script src="../assets/lesson.js" defer></script>
+<link rel="stylesheet" href="../assets/deskbot-course.css">
 </head>
-<body data-lesson-id="M00.01">
-<div class="lesson-layout">
-<aside class="lesson-sidebar">
-<a class="brand" href="../index.html">DESKBOT <span>学习室</span></a>
-<p class="small muted">从零读懂自己的 Agent 项目</p>
-<nav class="sidebar-links" aria-label="本课目录">
-<a href="#goal">本课目标</a>
-<a href="#concepts">01 · 先分清谁负责什么</a>
-<a href="#flow">02 · 一句话的旅程</a>
-<a href="#changes">03 · 改变输入会怎样</a>
-<a href="#agent">04 · 工具与 Agent</a>
-<a href="#source">05 · 对照真实代码</a>
-<a href="#practice">06 · 可选自测</a>
-<a href="#next">下一步</a>
-</nav>
-<div class="status-note"><strong>M00.01 · 初次学习</strong><p class="small">这页可以随时阅读和回看。阅读、点击演示和自测不自动记为“已掌握”。</p></div>
-<a class="small" href="../index.html">← 返回课程目录</a>
-</aside>
-<main class="lesson-main">
-<header class="lesson-hero" id="goal">
-<div class="breadcrumbs"><a href="../index.html">学习室</a> / M00 从零认识电脑、程序与项目 / 第 1 课</div>
-<p class="eyebrow">先看清系统，再走进代码</p>
-<h1>项目到底解决什么问题？</h1>
-<p class="subtitle">你说出一句话之后，谁接收声音，谁生成回答，谁让它真的播放出来？</p>
-<div class="tag-row"><span class="tag">M00.01</span><span class="tag">零前置知识</span><span class="tag">电脑先行</span><span class="tag">分步演示</span></div>
-</header>
-<div class="win"><strong>这一课，只获得一个清楚的认识</strong><p>能沿着“输入 → 处理 → 输出”，讲清浏览器、语音服务、语言模型与工具的分工，并知道怎样用执行结果判断一件事是否真的发生。</p></div>
-<p class="lead">先想象一个场景：你坐在电脑前，说“请简单解释什么是语音助手”。电脑接收声音，形成回答，再把回答念给你听。Deskbot 的语音服务，就是组织这些步骤的程序。</p>
-<div class="callout callout-note"><strong>本课怎样学</strong><p>先读解释，再点击演示。页面会展示完整过程；你想检验理解时，再展开底部自测。用手边的纸画一遍流程也可以。下一课才开始认识终端与运行第一个程序。</p></div>
+<body>
+<div class="dk-layout">
+  <nav id="dk-toc" aria-label="本课目录"></nav>
 
-<section id="concepts">
-<h2 class="section-heading"><span class="section-no">01</span>先分清谁负责什么</h2>
-<p>“用户”是使用系统的人；“需求”是他希望系统完成的事。“请解释语音助手”就是一个需求。下面四个词，描述了系统如何承接这个需求。</p>
-<div class="comparison-grid">
-<article class="concept-card"><p class="eyebrow">PROGRAM · 程序</p><h3>让电脑执行的步骤</h3><p>例如：接收名字、拼出问候、显示问候。写在文件里的指令叫<strong>源码</strong>；启动程序后，电脑才开始执行这些步骤。</p></article>
-<article class="concept-card"><p class="eyebrow">PROJECT · 项目</p><h3>围绕目标组织的材料</h3><p>源码、配置、文档、测试一起构成项目。配置选择运行选项，测试检查行为。Deskbot 包括语音服务、网页和机器人等部分。</p></article>
-<article class="concept-card"><p class="eyebrow">CLIENT / SERVER · 客户端与服务端</p><h3>发起请求，与处理请求</h3><p>浏览器页面采集输入、展示或播放结果；语音服务接收请求、组织处理并返回结果。两者可以都运行在同一台电脑上。</p></article>
-<article class="concept-card"><p class="eyebrow">LANGUAGE MODEL · 语言模型</p><h3>根据文字生成文字</h3><p>大语言模型常写作 <strong>LLM</strong>。它接收当前问题和程序准备的相关信息，生成回答，也可能提出工具请求。模型可以在本机或远程服务运行。</p></article>
+  <main class="dk-main">
+    <header class="dk-hero">
+      <div class="crumbs">
+        <a href="../index.html">📚 38课学习地图</a> /
+        <a href="../index.html#M00">M00 · 零基础破冰与最小够用 Python</a> /
+        <span>M00.01</span>
+      </div>
+      <p class="eyebrow">M00.01 · 全局认知基石（零代码前置样板课）</p>
+      <h1>项目到底解决什么问题？</h1>
+      <p class="subtitle">当你对着电脑或桌面机器人说出一句话后，到底是谁听懂了声音、谁动了脑子、谁真正按下了快门？</p>
+      <div class="chips">
+        <span class="chip whitebox">🌱 零基础第一课</span>
+        <span class="chip sim">🧪 含双场景交互沙盒</span>
+        <span class="chip">⏱ 约 18 分钟</span>
+        <span class="chip">📍 dialogue.py · camera_dialogue.py</span>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">🎯</div>
+      <div>
+        <h4>本课唯一核心收获</h4>
+        <p>不看架构图，能用自己的大白话沿着「输入 → 处理 → 输出」讲清<strong>浏览器/设备、语音服务（<code>server/voice</code>）、大语言模型（LLM）与外部工具（MCP）</strong>四者的分工边界，并知道为什么「模型说已拍照 ≠ 真的拍了照」。</p>
+      </div>
+    </div>
+
+    <div class="prereq">
+      <b>前置检查：</b>
+      <span class="known">✓ 已掌握：无任何编程前置要求（从日常使用手机语音助手的直觉出发）</span> ·
+      <span class="gap">△ 本课从零拆解：程序 vs 项目、客户端 vs 服务端、VAD / ASR / LLM / TTS、工具调用闭环</span>
+    </div>
+
+    <!-- ========== §01 问题与角色分工 ========== -->
+    <section>
+      <h2><span class="num">01</span>先把四个核心角色分清楚</h2>
+      <p>想象你坐在电脑前，对桌面助手说：<em>“你好，简单解释一下什么是语音助手。”</em> 几秒钟后，扬声器里传出自然的中文回答。要让这件事发生，并不是靠“一个无所不能的大模型”单打独斗，而是四个角色像接力赛一样配合完成的：</p>
+
+      <aside class="sidenote">
+        <strong>常见零基础误区：</strong>把代码下载或上传到 GitHub 只是“把菜谱存进了网盘”；要真正对话，必须在本机把服务端<strong>进程跑起来</strong>，并连上可用的模型服务。
+      </aside>
+
+      <div class="grid-2">
+        <article class="info-card">
+          <p><span class="role-badge" data-role="client">CLIENT · 客户端</span></p>
+          <h3>浏览器测试页 / ESP32 机器人</h3>
+          <p>系统的“耳朵、嘴巴和手脚”。负责采集麦克风声音、播放服务端发回的音频，或者在收到明确指令时调用摄像头拍照、驱动底盘。</p>
+        </article>
+        <article class="info-card">
+          <p><span class="role-badge" data-role="server">SERVER · 语音服务端</span></p>
+          <h3><code>Deskbot/server/voice</code>（我们要学透的主角）</h3>
+          <p>整套系统的“总调度台”。负责接收声音、转成文字、查历史记忆、把问题交给大模型、执行工具，再把回复文字合成语音发回去。</p>
+        </article>
+        <article class="info-card">
+          <p><span class="role-badge" data-role="model">MODEL · 大语言模型 (LLM)</span></p>
+          <h3>只做“读文字 → 吐文字/工具请求”的大脑</h3>
+          <p><strong>关键真相：</strong>LLM 本身既听不见声音，也不能自己操作你的摄像头或读写数据库！它只能根据服务端喂给它的文字上下文，生成回复文字或写出“我想调用某某工具”的申请单。</p>
+        </article>
+        <article class="info-card">
+          <p><span class="role-badge" data-role="tool">TOOL &amp; DB · 工具与记忆</span></p>
+          <h3>SQLite 记忆库与 MCP 设备工具</h3>
+          <p>服务端手里的“记事本”和“遥控器”。只有当 Python 程序真正查了数据库、真正向摄像头发出指令并拿到返回结果，动作才算真实发生。</p>
+        </article>
+      </div>
+
+      <div class="callout intuition">
+        <span class="ct">餐厅后厨类比（一秒记住分工）</span>
+        <p><strong>客户端</strong>是前台服务员（听顾客点单、端菜上桌）；<strong><code>server/voice</code> 服务端</strong>是厨房总管（拆单、查忌口记录、安排工序）；<strong>LLM 大模型</strong>是只动嘴不动手的主厨顾问（看单子决定怎么答复、或开条子说“去冰柜拿食材”）；<strong>工具（MCP）</strong>才是真正跑去开冰柜拿回食材的帮厨。</p>
+      </div>
+    </section>
+
+    <!-- ========== §02 零基础缩写拆桥 ========== -->
+    <section>
+      <h2><span class="num">02</span>零基础拆桥：语音链路里的 4 个高频缩写</h2>
+      <p>读语音 Agent 项目时，你会反复看到下面 4 个英文缩写。它们各自只干一件非常具体的事：</p>
+
+      <div class="table-wrap">
+        <table class="kv-table">
+          <thead>
+            <tr><th>缩写</th><th>中文全称</th><th>只干哪一件事？</th><th>如果这一步坏了会怎样？</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>VAD</td><td>语音活动检测<br><span class="muted small">Voice Activity Detection</span></td><td>判断麦克风里当前“有没有人在说话”，以及停顿多久算“一句话说完了”。</td><td>切句太急会把话截成两半；切句太慢会让你说完干等很久。</td></tr>
+            <tr><td>ASR</td><td>自动语音识别<br><span class="muted small">Automatic Speech Recognition</span></td><td>把录下来的一段<strong>声音数据转成中文文字</strong>（俗称“语音转文字”）。</td><td>如果把“打开相机”听成“打开香薰”，后面大模型收到的问题就全错了。</td></tr>
+            <tr><td>LLM</td><td>大语言模型<br><span class="muted small">Large Language Model</span></td><td>阅读系统提示词 + 历史记忆 + 本轮文字问题，生成回答文字或工具调用请求。</td><td>答非所问、胡编乱造，或者该调工具时没调工具。</td></tr>
+            <tr><td>TTS</td><td>语音合成<br><span class="muted small">Text-to-Speech</span></td><td>把大模型生成的<strong>回复文字变成可播放的声音数据</strong>（俗称“文字转语音”）。</td><td>网页上能看到正确的回答文字，但耳机/喇叭里完全没声音。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== §03 交互沙盒 1：语音问答 vs 文字直入 ========== -->
+    <section>
+      <h2><span class="num">03</span>动手推演一：一句话如何走完 7 个环节？</h2>
+      <p>点击下方顶部的<strong>「🎙️ 说话提问」</strong>与<strong>「⌨️ 文字提问并朗读」</strong>两个按钮对比，再用「下一步」（或键盘 <kbd>←</kbd> <kbd>→</kbd>）逐步观察：为什么在阶段 1 我们不用麦克风，也能直接研究和测试 Agent 大脑？</p>
+
+      <div id="sim-pipeline"></div>
+
+      <div class="callout principle">
+        <span class="ct">这就是为什么我们能“绕开音频先攻克 Agent 大脑”</span>
+        <p>在刚才切到「⌨️ 文字提问并朗读」时你已经亲眼看到了：跳过前 3 步录音和识别后，<strong>从第 4 步组装上下文开始，后面走的完全是同一套 Agent 与语音合成代码！</strong>这也是我们在 <code>M01</code> 能先用纯文本调试台快速吃透并改造 Agent 的根本原因。</p>
+      </div>
+    </section>
+
+    <!-- ========== §04 交互沙盒 2：普通聊天 vs Agent 工具循环 ========== -->
+    <section>
+      <h2><span class="num">04</span>动手推演二：什么才叫真正的 Agent 工具调用？</h2>
+      <p>如果用户问<em>“帮我看看摄像头画面里有什么”</em>，普通聊天模型只能干瞪眼或瞎编。开启工具（MCP）后，Deskbot 会进入<strong>「模型提申请 → Python 跑工具 → 结果塞回上下文 → 模型据实回答」</strong>的闭环。点击下方切换两种情况对比：</p>
+
+      <div id="sim-agent"></div>
+
+      <div class="callout warn">
+        <span class="ct">Deskbot 源码里的两个真实工程细节（提前留个印象）</span>
+        <ul>
+          <li><strong>默认开关：</strong>配置文件里 <code>mcp.enabled</code> 默认是关闭的（只走普通聊天后端）；开启后才会启用带工具循环的 <code>CameraMcpDialogueBackend</code>。</li>
+          <li><strong>确定性捷径与它的双刃剑：</strong>当前代码对“停下”等明确指令写了直接触发工具的快捷分支——这对<strong>紧急刹车</strong>非常实用，但在<em>“先拍张照看看桌上有什么，再往后退一步”</em>这种复合指令上会提前退出丢掉后半句（这正是我们在 <code>M01.06</code> 要亲手修复的第 1 个求职级 PR！）。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========== §05 真实源码聚光灯走读 ========== -->
+    <section>
+      <h2><span class="num">05</span>对照真实源码：这些分工写在哪个文件里？</h2>
+      <p>今天<strong>不需要你读懂 Python 语法符号</strong>（下一课起我们会把每个冒号、缩进、<code>class</code> 掰开揉碎讲）。今天只看“长什么样、职责怎么切分”——点击下方两个标签切换文件，再点击右侧编号卡片看左侧真实源码聚光灯高亮：</p>
+
+      <div class="dk-tabs">
+        <div class="tab" data-label="1 · dialogue.py（语音与 Agent 的解耦边界）">
+          <div class="code-walk" data-dim>
+<pre data-file="src/voice_server/dialogue.py" data-start="16"><code class="language-python">@dataclass(frozen=True)
+class TurnRequest:
+    device_id: str
+    session_id: str
+    turn_id: str
+    text: str
+    messages: list[dict[str, str]]
+    device_mcp: Any | None = None
+    diagnostics: dict[str, Any] | None = None
+
+
+class DialogueBackend(Protocol):
+    """Yield speakable text; propagate cancellation and close per-turn resources.
+
+    Instances may serve multiple devices concurrently. Agent/tool execution
+    belongs inside the backend, while audio and device messages stay in voice.
+    """
+
+    def stream(self, request: TurnRequest) -&gt; AsyncIterator[str]: ...
+
+
+class LLMDialogueBackend:
+    def __init__(self, llm: LLMProvider) -&gt; None:
+        self._llm = llm
+
+    def stream(self, request: TurnRequest) -&gt; AsyncIterator[str]:
+        return self._llm.stream(request.messages)</code></pre>
+            <ol class="walk">
+              <li data-lines="16-24"><strong>一轮对话的打包请求（<code>TurnRequest</code>）</strong>：语音层把设备 ID、转写好的用户文字 <code>text</code>、拼好的历史消息 <code>messages</code> 打包成一个干净包裹交给后端。</li>
+              <li data-lines="27-34"><strong>黄金解耦契约（<code>DialogueBackend</code>）</strong>：看英文注释——<em>“Agent 与工具执行属于后端内部，音频与设备通信留在语音层”</em>。任何后端只要接收 <code>TurnRequest</code> 并逐块吐出可朗读文字即可接入！</li>
+              <li data-lines="37-42"><strong>最朴素的默认后端（<code>LLMDialogueBackend</code>）</strong>：不开工具时，它只是把 <code>request.messages</code> 原样转交给语言模型流式生成回答。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tab" data-label="2 · camera_dialogue.py（工具执行与遇错分支）">
+          <div class="code-walk" data-dim>
+<pre data-file="src/voice_server/camera_dialogue.py" data-start="337"><code class="language-python">                messages.append({
+                    "role": "assistant", "content": None,
+                    "tool_calls": [{"id": call.id, "type": "function", "function": {
+                        "name": call.name, "arguments": call.arguments,
+                    }} for call in calls],
+                })
+                for call in calls:
+                    result = await self._execute(client, request, call, available_names, device_tool_names)
+                    summary = json.loads(result)
+                    if summary.get("success") is False:
+                        reason = summary.get("error") or summary.get("tool_message") or "设备未确认操作成功"
+                        yield f"设备操作失败：{reason}"
+                        return
+                    messages.append({"role": "tool", "tool_call_id": call.id, "content": result})</code></pre>
+            <ol class="walk">
+              <li data-lines="337-342"><strong>记录模型提出的工具申请</strong>：先把模型本轮发出的 <code>tool_calls</code> 追加进对话上下文。</li>
+              <li data-lines="343-344"><strong>Python 程序真正动手执行</strong>：调用 <code>self._execute(...)</code> 去请求摄像头或设备 MCP 工具，拿到 JSON 字符串结果。</li>
+              <li data-lines="346-349"><strong>当前代码的改进起点（<code>M01.07</code> 伏笔）</strong>：一旦返回 <code>success=False</code>，现在直接播报失败并 <code>return</code> 结束整轮，模型没有机会修正参数小错。</li>
+              <li data-lines="350"><strong>成功结果回传模型</strong>：工具成功时，把结果包成 <code>role="tool"</code> 消息塞回 <code>messages</code>，下一轮循环模型就能看到真实结果并组织回答了！</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §06 小结与面试模板 ========== -->
+    <section>
+      <h2><span class="num">06</span>本课浓缩与深圳面试表达模板</h2>
+      <div class="callout summary">
+        <span class="ct">三句话记住全局版图</span>
+        <ul>
+          <li><strong>语音问答主干：</strong>客户端采音 → VAD 判停 → ASR 转字 → 记忆拼上下文 → 对话后端（LLM/Agent）生成回复文字 → TTS 转语音 → 客户端播放。</li>
+          <li><strong>Agent 本质分工：</strong>大模型只负责“根据上下文提出工具调用请求和生成文字”，Python 宿主程序才负责“校验权限、真正执行工具并把真实回执喂回模型”。</li>
+          <li><strong>排障黄金法则：</strong>沿着数据经过的节点看证据——有文字没声音查 TTS/传输/播放；嘴上说已拍照却没画面查 <code>tool_calls</code> 日志与工具返回 JSON。</li>
+        </ul>
+      </div>
+
+      <div class="callout interview">
+        <span class="ct">深圳 Agent 岗 · 30 秒项目开场介绍模板</span>
+        <p>「Deskbot 是一个支持实时语音打断、长期记忆治理与 MCP 硬件工具调用的桌面语音 Agent 系统。架构上我们通过 <code>DialogueBackend</code> 协议把底层的 Opus/VAD/ASR/TTS 实时音频流与上层的 Agent 决策循环彻底解耦——这既保证了语音打断时的毫秒级状态清理和底盘安全急停，又让我们能独立对 Agent 工具注册校验、错误分级自愈和混合记忆检索做纯文本自动化评测。」</p>
+      </div>
+    </section>
+
+    <!-- ========== §07 自测与讲回验收 ========== -->
+    <section>
+      <h2><span class="num">07</span>自测与通关讲回验收</h2>
+
+      <details class="reveal q">
+        <summary>可选快测：3 道职责边界判断题</summary>
+        <form class="dk-quiz">
+          <fieldset data-name="q1" data-answer="asr" data-explain="输入本身已经是文字，无需再跑录音、VAD 和语音转文字（ASR）；但要求朗读回答，所以后面的上下文、LLM、TTS 和播放仍需执行。">
+            <legend>1. 用户在测试网页直接打字提问，并希望听到语音朗读回答，哪一步会被直接跳过？</legend>
+            <label class="q-opt"><input type="radio" name="q1" value="asr"> A. 声音转文字（ASR）与录音切句（VAD）</label>
+            <label class="q-opt"><input type="radio" name="q1" value="tts"> B. 回复文字转声音（TTS）</label>
+            <label class="q-opt"><input type="radio" name="q1" value="llm"> C. 上下文组装与语言模型生成回复</label>
+          </fieldset>
+
+          <fieldset data-name="q2" data-answer="program" data-explain="大语言模型只能输出 JSON 形态的工具调用请求文本；真正发网络请求、操作摄像头或设备的是服务端 Python 程序与对应 MCP 服务。">
+            <legend>2. 当模型决定需要“拍照看桌面”时，是谁真正发起拍照动作的？</legend>
+            <label class="q-opt"><input type="radio" name="q2" value="model"> A. 远端大语言模型直接连进你的电脑摄像头拍照</label>
+            <label class="q-opt"><input type="radio" name="q2" value="program"> B. 模型只输出工具请求，由 Deskbot 程序通过 MCP 调用浏览器/设备执行拍照</label>
+            <label class="q-opt"><input type="radio" name="q2" value="github"> C. 保存代码的 GitHub 仓库自动执行</label>
+          </fieldset>
+
+          <fieldset data-name="q3" data-answer="trace" data-explain="模型完全可能产生口头幻觉（没调工具或工具失败却说成功）。必须核查服务端工具调用记录（tool_calls）、返回状态以及是否真拿到了图像/视觉结果。">
+            <legend>3. 助手回复说“我已经帮你拍好照片了”，作为开发者你怎样确认它没有撒谎（幻觉）？</legend>
+            <label class="q-opt"><input type="radio" name="q3" value="trust"> A. 只要模型语气肯定，就说明一定拍成功了</label>
+            <label class="q-opt"><input type="radio" name="q3" value="trace"> B. 检查本轮诊断日志中是否真发起了拍照工具调用、返回 <code>success=true</code> 且拿到了图像分析结果</label>
+            <label class="q-opt"><input type="radio" name="q3" value="tts"> C. 只要喇叭正常播出了这句话就算拍照完成</label>
+          </fieldset>
+          <button class="dk-btn primary" type="submit">核对判断与解析</button>
+        </form>
+      </details>
+
+      <details class="reveal q">
+        <summary>🎤 面试初探追问：为什么服务端发出首个音频包的时间（<code>first_audio_ms</code>），不等于用户耳朵听到声音的时间？</summary>
+        <p>因为服务端调用完 TTS 并把第一个 Opus 音频包写进 WebSocket 后，数据还要经过网络传输、客户端接收缓冲、Opus 解码还原以及扬声器硬件播放队列。因此工程上必须诚实区分“服务端首包耗时”与“端到端实机可听见耗时”。</p>
+      </details>
+
+      <div class="teachback-card" data-teachback>
+        <h3>📝 M00.01 通关讲回草稿箱（用你自己的大白话写下来）</h3>
+        <p class="small muted">写完点击下方按钮即可一键复制成标准消息，粘贴发给 AI 导师完成第 1 课验收（不确定的地方直接写“这里还不懂”，导师会专门给你补齐）。</p>
+        <label class="tb-field">
+          1. 浏览器（或机器人）、语音服务端（server/voice）、大语言模型（LLM）三者各自负责什么？
+          <textarea data-field="roles" placeholder="试着用自己的话写一写，不用背标准术语…"></textarea>
+        </label>
+        <label class="tb-field">
+          2. 如果直接输入文字提问并让助手朗读回答，跳过了什么步骤？保留了什么步骤？
+          <textarea data-field="text_mode" placeholder="回想一下刚才沙盒里虚线置灰的方块…"></textarea>
+        </label>
+        <label class="tb-field">
+          3. 助手显示“已经完成拍照”，你要看哪些证据才能确认拍照真的发生了？
+          <textarea data-field="evidence" placeholder="从请求、执行和返回结果三个角度想想…"></textarea>
+        </label>
+        <div class="tb-actions">
+          <button class="dk-btn primary" type="button" data-copy-teachback>📋 一键复制我的回答发给 AI 老师验收</button>
+          <span class="tb-status">草稿会自动保存在当前浏览器本地。</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="dk-nav" aria-label="课程前后导航">
+      <a href="../index.html"><small>← 返回入口</small>38 课学习室首页</a>
+      <a class="next" href="M00.02.html"><small>下一课 · M00.02 →</small>文件、目录、终端与你的第一个 Python 程序</a>
+    </nav>
+
+    <div class="ask-ai">
+      💬 读完有任何疑问直接发给陪读 AI：<code>提交 M00.01 回答验收</code> · <code>再讲讲 MCP 是什么</code> · <code>生成 Batch 0 剩余课件</code>
+    </div>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · M00.01 样板课 · 2026-11-26</span>
+      <span><a href="../HTML_DESIGN_RULES.md">HTML模板规范</a> · <a href="../syllabus.md">38课大纲</a> · <a href="M00.01.md">原始讲稿备份</a></span>
+    </footer>
+  </main>
+
+  <aside class="dk-margin" aria-hidden="true"></aside>
 </div>
-<p>源码上传到 GitHub，表示文件已保存到远程仓库。真正使用语音助手，还需要启动相应程序并让模型服务可用。</p>
-<div class="definition-list"><div><strong>输入</strong><p>用户说出的声音，或输入的文字。</p></div><div><strong>处理</strong><p>接收、转写、准备上下文、回答，以及合成声音。</p></div><div><strong>输出</strong><p>用户能看到的文字、听到的声音，或执行完成的工具结果。</p></div></div>
-</section>
 
-<section id="flow">
-<h2 class="section-heading"><span class="section-no">02</span>跟着一句话，走过整条链路</h2>
-<p>先看语音问答。下方每个方块是一项职责。点击“下一步”观察数据怎样变化，也可以直接点某个环节。</p>
-<div class="simulator" data-simulator="dialogue">
-<div class="scenario-controls"><div class="segmented" role="group" aria-label="选择输入方式"><button type="button" data-mode="voice" aria-pressed="true">说话提问</button><button type="button" data-mode="text" aria-pressed="false">文字提问并朗读</button></div><span class="small muted">本地教学模拟</span></div>
-<p class="small" data-scenario-caption>输入：“请简单解释什么是语音助手。”</p>
-<div class="stage-grid" data-stage-grid aria-label="对话处理环节"></div>
-<div class="simulation-detail" aria-live="polite" aria-atomic="true"><p class="eyebrow" data-step-role></p><h3 data-step-title></h3><p data-step-explain></p><pre><code data-step-data></code></pre><p class="small muted" data-step-source></p></div>
-<div class="step-controls"><button class="button button-quiet" type="button" data-action="previous">← 上一步</button><span class="step-count" data-step-count></span><button class="button button-primary" type="button" data-action="next">下一步 →</button></div>
-<details><summary>查看已经经过的消息与数据</summary><ol class="event-log" data-event-log></ol></details>
-</div>
-<noscript><p>当前浏览器关闭了脚本，分步操作不可用。完整文字路径：采集声音 → 判断说完 → ASR转文字 → 准备上下文 → 语言模型生成回答 → TTS合成声音 → 返回并播放。</p></noscript>
-<p class="small muted">演示中的文字、工具结果都是固定示例。这里不会连接模型、打开麦克风或摄像头，也不会向机器人发送指令。</p>
-<h3>三个缩写，一次讲清</h3>
-<dl class="reading-map"><dt>VAD · 语音活动检测</dt><dd>判断一段声音里是否有说话，帮助系统确定一轮发言何时结束。手动停止录音也能结束输入。</dd><dt>ASR · 自动语音识别</dt><dd>把声音转成文字。如果这里把问题识别错了，后面的模型可能收到错误的问题。</dd><dt>TTS · 文字转语音</dt><dd>把回答文字转换成声音数据。声音还要被发送、接收和播放，用户才真正听见。</dd></dl>
-<p><strong>上下文</strong>是本次回答可以参考的信息，例如刚才说过的话、助手的回答方式和相关偏好。模型能参考哪些历史，需要程序准备并提供。</p>
-<p>本课按职责画图。真实浏览器链路中，一部分声音判断发生在测试桥，一部分处理发生在语音会话；具体分工、声音编码和队列将在后面逐步拆解。</p>
-</section>
+<script src="../assets/deskbot-course.js"></script>
+<script>
+DeskCourse.ready(() => {
+  // 1. 语音 vs 文字全链路对比沙盒
+  const pipelineStages = [
+    { id: "capture", title: "采集声音", role: "client", badge: "CLIENT" },
+    { id: "vad",     title: "VAD 判停", role: "server", badge: "VAD" },
+    { id: "asr",     title: "ASR 转文字", role: "server", badge: "ASR" },
+    { id: "context", title: "拼装上下文", role: "db",     badge: "MEMORY" },
+    { id: "llm",     title: "生成回答",   role: "model",  badge: "LLM" },
+    { id: "tts",     title: "TTS 转语音", role: "server", badge: "TTS" },
+    { id: "play",    title: "接收并播放", role: "client", badge: "CLIENT" }
+  ];
 
-<section id="changes">
-<h2 class="section-heading"><span class="section-no">03</span>改变一个条件，看看哪些环节受影响</h2>
-<div class="comparison-grid">
-<article class="concept-card"><h3>直接输入文字，会发生什么？</h3><p>回到上方，选择“文字提问并朗读”。采集声音、判断录音结束、声音转文字都被跳过；程序继续准备上下文、生成回答，再做语音合成和播放。</p><p><strong>原因：</strong>问题已经以文字形式到达，程序可以直接使用。</p></article>
-<article class="concept-card"><h3>有回答文字，却听不到声音？</h3><p>这次文字处理已有可见结果。接下来检查 TTS 是否产生声音、服务端是否发送、浏览器是否接收和播放，以及音量与输出设备。</p><p><strong>定位方法：</strong>沿数据经过的节点收集证据，逐步缩小范围。</p></article>
-</div>
-<div class="callout"><strong>同一个方法，也能用来读代码</strong><p>对每个函数问三件事：它接收什么，做了什么，返回什么。等学到代码，我们会用同样的方法追踪真实变量和调用。</p></div>
-</section>
+  const commonTailSteps = [
+    {
+      id: "context", node: "context", edge: "e3", role: "db", badge: "MEMORY · 记忆与会话", state: "THINKING",
+      title: "读取记忆并拼装 messages 列表",
+      explain: "服务端查出与该设备相关的长期偏好、近期对话摘要，与本轮文字问题拼成大模型能读懂的消息列表。",
+      data: '[\n  {"role": "system", "content": "你是桌面陪伴助手..."},\n  {"role": "user", "content": "请简单解释什么是语音助手。"}\n]',
+      lang: "json", source: "src/voice_server/session.py::_make_messages"
+    },
+    {
+      id: "llm", node: "llm", edge: "e4", role: "model", badge: "LLM · 大语言模型", state: "THINKING",
+      title: "对话后端调用模型流式吐字",
+      explain: "LLM 逐小块生成回复文字（此时还只是纯文本字符串，没有任何声音波形）。",
+      data: '"语音助手可以接收你的说话请求，理解意图后再用语音回答你。"',
+      lang: "json", source: "src/voice_server/dialogue.py::LLMDialogueBackend.stream"
+    },
+    {
+      id: "tts", node: "tts", edge: "e5", role: "server", badge: "TTS · 语音合成", state: "SPEAKING",
+      title: "按句切分并合成为 Opus 音频包",
+      explain: "服务端每攒够一小句文字就送给 TTS 转成 PCM 再编码成 Opus 音频帧，一边生成一边往外发，减少用户干等时间。",
+      data: "输入文本 -> TTS 音频流 -> 16kHz/24kHz PCM -> Opus 二进制帧",
+      lang: "plain", source: "src/voice_server/session.py::_speak_sentence"
+    },
+    {
+      id: "play", node: "play", edge: "e6", role: "client", badge: "CLIENT · 扬声器播放", state: "SPEAKING -> IDLE",
+      title: "客户端接收音频包并真正播出声音",
+      explain: "浏览器或 ESP32 收到音频帧送入播放队列，直到喇叭振动发声，用户才真正听见回答。",
+      data: '{"type": "tts", "state": "stop"}  // 播完收尾，准备听下一句',
+      lang: "json", source: "local_test/app.js · 音频播放队列"
+    }
+  ];
 
-<section id="agent">
-<h2 class="section-heading"><span class="section-no">04</span>当助手需要采取行动</h2>
-<p>换一个任务：“查询一下设备状态。”回答需要来自设备的信息。<strong>工具</strong>是程序提供的一项具体操作，例如查询状态、拍照、调整音量。工具有输入，也会返回执行结果。</p>
-<p>当模型能围绕目标提出工具请求，再根据工具结果决定下一步，就体现了 <strong>Agent 的核心机制</strong>。下面展示这种模型工具循环的简化路径。</p>
-<div class="simulator" data-simulator="tools">
-<div class="scenario-controls"><strong>查询设备状态 · 工具循环示意</strong><span class="small muted">模拟工具已就绪</span></div>
-<div class="stage-grid" data-stage-grid aria-label="工具调用环节"></div>
-<div class="simulation-detail" aria-live="polite" aria-atomic="true"><p class="eyebrow" data-step-role></p><h3 data-step-title></h3><p data-step-explain></p><pre><code data-step-data></code></pre><p class="small muted" data-step-source></p></div>
-<div class="step-controls"><button class="button button-quiet" type="button" data-action="previous">← 上一步</button><span class="step-count" data-step-count></span><button class="button button-primary" type="button" data-action="next">下一步 →</button></div>
-<details><summary>查看已经经过的工具消息</summary><ol class="event-log" data-event-log></ol></details>
-</div>
-<div class="callout callout-note"><strong>对照当前 Deskbot 的实际路径</strong><p>默认配置使用普通语言模型对话；开启 MCP 后，可以使用现有摄像头与设备工具后端。MCP 是连接和调用工具的一类协议，后面单独学习。</p><p>明确的拍照、运动、停止请求还有程序直接处理的路径；因此，并非每个操作都要先让文字模型选择工具。真实设备返回“收到指令”，也需要与“实际动作完成”区分。</p></div>
-<p>第一课先记住：<strong>模型可以提出请求；程序执行工具；执行结果给后续回答提供依据。</strong>用户看到“已经完成”时，可以继续查对应的调用与结果。</p>
-</section>
+  DeskCourse.tracePlayer("#sim-pipeline", {
+    allStages: pipelineStages,
+    graph: {
+      width: 760,
+      height: 112,
+      nodes: [
+        { id: "capture", label: "01 采集声音", sub: "浏览器/ESP32", x: 56,  y: 56, w: 96, h: 48 },
+        { id: "vad",     label: "02 VAD判停", sub: "静音切句",     x: 164, y: 56, w: 94, h: 48 },
+        { id: "asr",     label: "03 ASR转字", sub: "SenseVoice",   x: 272, y: 56, w: 96, h: 48 },
+        { id: "context", label: "04 拼上下文", sub: "SQLite记忆",  x: 382, y: 56, w: 100, h: 48 },
+        { id: "llm",     label: "05 LLM回答", sub: "对话/Agent",   x: 494, y: 56, w: 98, h: 48 },
+        { id: "tts",     label: "06 TTS合成", sub: "Edge/本地",    x: 602, y: 56, w: 94, h: 48 },
+        { id: "play",    label: "07 播放出声", sub: "客户端喇叭",  x: 708, y: 56, w: 92, h: 48 }
+      ],
+      edges: [
+        { id: "e1", from: "capture", to: "vad" },
+        { id: "e2", from: "vad",     to: "asr" },
+        { id: "e3", from: "asr",     to: "context" },
+        { id: "e4", from: "context", to: "llm" },
+        { id: "e5", from: "llm",     to: "tts" },
+        { id: "e6", from: "tts",     to: "play" }
+      ]
+    },
+    scenarios: [
+      {
+        label: "🎙️ 说话提问（完整 7 步）",
+        summary: "用户对着麦克风说：“请简单解释什么是语音助手。”——声音依次穿过全部 7 个节点：",
+        skippedStages: [],
+        steps: [
+          {
+            id: "capture", node: "capture", role: "client", badge: "CLIENT · 麦克风采集", state: "LISTENING",
+            title: "浏览器或机器人从麦克风采集原始声音帧",
+            explain: "用户获得授权后开口说话，客户端把连续的声音切成一帧帧音频包发给语音服务端。",
+            data: "二进制音频帧流 (Opus packets -> 16kHz PCM)",
+            lang: "plain", source: "local_test/app.js · session.py::handle_audio"
+          },
+          {
+            id: "vad", node: "vad", edge: "e1", role: "server", badge: "VAD · 语音端点检测", state: "LISTENING",
+            title: "VAD 检测到有人说话，并在停顿足够久后判定“说完了”",
+            explain: "Silero VAD 持续打分，发现说完后连续静音达到阈值，立即触发本轮识别流水线。",
+            data: "speech_detected=True -> silence_ms >= min_silence_duration_ms -> 启动转写",
+            lang: "python", source: "src/voice_server/session.py::handle_audio"
+          },
+          {
+            id: "asr", node: "asr", edge: "e2", role: "server", badge: "ASR · 语音转文字", state: "RECOGNIZING",
+            title: "ASR 把整段录音转成中文字符串",
+            explain: "SenseVoice 模型把刚才录下的 PCM 字节变成文字。注意：如果这一步识别错字，后面大模型看到的就是错问题。",
+            data: '{"type": "stt", "text": "请简单解释什么是语音助手。"}',
+            lang: "json", source: "src/voice_server/session.py::_run_pipeline"
+          },
+          ...commonTailSteps
+        ]
+      },
+      {
+        label: "⌨️ 文字提问并朗读（跳过前 3 步）",
+        summary: "直接输入文字时，无需麦克风、VAD 和 ASR，直接从第 4 步组装上下文进入同一套对话与语音合成管线：",
+        skippedStages: ["capture", "vad", "asr"],
+        steps: commonTailSteps
+      }
+    ]
+  });
 
-<section id="source">
-<h2 class="section-heading"><span class="section-no">05</span>这些分工，在真实代码的哪里？</h2>
-<p>先把功能和文件对应起来。下面摘自当前项目源码，点击左侧说明可以切换关注点；本课先读职责，语法会在后面的课中逐行讲。</p>
-<div class="code-walk" data-code-walk>
-<div class="source-nav" role="group" aria-label="选择源码片段"><button type="button" data-source="asr" aria-pressed="true">01 · 文字输入跳过 ASR</button><button type="button" data-source="backend" aria-pressed="false">02 · 普通后端调用模型</button><button type="button" data-source="tool" aria-pressed="false">03 · 程序执行工具</button></div>
-<div class="source-preview"><p class="small" data-source-path></p><pre tabindex="0" aria-label="当前项目源码片段"><code data-source-code></code></pre><div class="source-explain"><h3 data-source-title></h3><p data-source-explain></p></div></div>
-</div>
-<p class="small muted">片段按当前源码提取，行号与核对日期为 2026-11-26。高亮表示本课的关注位置；不是实际运行轨迹。</p>
-<div class="table-wrap"><table><caption>项目文件与职责 · 路径相对 Deskbot/server/voice</caption><thead><tr><th>文件</th><th>负责什么</th></tr></thead><tbody>
-<tr><td><code>run.py</code></td><td>启动语音服务。</td></tr>
-<tr><td><code>local_test.py</code></td><td>启动浏览器测试页和桥接服务。</td></tr>
-<tr><td><code>src/voice_server/app.py</code></td><td>组装语音、模型、记忆与工具组件。</td></tr>
-<tr><td><code>src/voice_server/session.py</code></td><td>组织一轮输入、回答、声音发送和打断。</td></tr>
-<tr><td><code>src/voice_server/dialogue.py</code></td><td>约定对话后端接收什么、输出什么。</td></tr>
-<tr><td><code>src/voice_server/camera_dialogue.py</code></td><td>直接指令处理，以及模型工具循环。</td></tr>
-<tr><td><code>src/voice_server/providers/</code></td><td>接入语音检测、识别、模型与合成。</td></tr>
-<tr><td><code>src/voice_server/memory/</code></td><td>存取对话、摘要与用户偏好。</td></tr>
-<tr><td><code>local_test/</code></td><td>浏览器的页面、交互与音频处理。</td></tr>
-</tbody></table></div>
-<p>“组件”是一项职责对应的程序部分；“接口”是不同部分约定怎样传入和返回信息。打开测试网页后，仍需语音服务和相应模型能力就绪，才能完成真实对话。</p>
-</section>
-
-<section id="practice">
-<h2 class="section-heading"><span class="section-no">06</span>想检查理解时，再来这里</h2>
-<p>先充分看懂例子。下面自测可以随时展开、重复尝试；完成自测不自动改变课程的掌握记录。</p>
-<details class="checkpoint"><summary>可选自测 · 三个职责判断题</summary>
-<form class="quiz" data-quiz>
-<fieldset><legend>1. 用户直接输入文字，并要求朗读。可以跳过哪一步？</legend><label class="quiz-option"><input type="radio" name="q1" value="asr">声音转文字（ASR）</label><label class="quiz-option"><input type="radio" name="q1" value="tts">回答文字转声音（TTS）</label><label class="quiz-option"><input type="radio" name="q1" value="model">组织并生成回答</label></fieldset>
-<fieldset><legend>2. 模型提出一个工具请求后，谁发起实际执行？</legend><label class="quiz-option"><input type="radio" name="q2" value="model">文字模型本身</label><label class="quiz-option"><input type="radio" name="q2" value="program">助手程序与工具服务</label><label class="quiz-option"><input type="radio" name="q2" value="github">保存源码的 GitHub 仓库</label></fieldset>
-<fieldset><legend>3. 回答文字正确，但听不到声音。接下来怎么查？</legend><label class="quiz-option"><input type="radio" name="q3" value="rewrite">立即重写语言模型</label><label class="quiz-option"><input type="radio" name="q3" value="audio">检查合成、发送、接收、播放各环节</label><label class="quiz-option"><input type="radio" name="q3" value="done">已有文字就代表声音播放完成</label></fieldset>
-<button class="button button-primary" type="submit">查看反馈</button><div class="quiz-feedback" data-quiz-feedback aria-live="polite"></div>
-</form>
-</details>
-<details><summary>可选练习 · 用自己的话讲一遍</summary>
-<p>在纸上画出“你说话 → 你听到回答”的路径，再分别标出浏览器、语音服务和语言模型所在位置。或者在下面写出你的理解，复制给讲课 AI 讨论。</p>
-<div class="answer-grid"><label>浏览器、语音服务、语言模型分别负责什么？<textarea data-draft="roles" rows="4" placeholder="先写你目前理解的分工。不确定的地方也可以写下来。"></textarea></label><label>直接输入文字并要求朗读，可以跳过什么？<textarea data-draft="text" rows="3" placeholder="试着解释上方灰色的环节为什么被跳过。"></textarea></label><label>显示“已经拍照”，怎样确认真的执行了？<textarea data-draft="evidence" rows="3" placeholder="你希望看到哪些请求、结果或实际图像？"></textarea></label></div>
-<p class="small muted" data-draft-status>草稿只保存在当前浏览器；不会写入项目文件或同步到 GitHub。</p>
-<button class="button" type="button" data-copy-answers>复制回答给 AI</button><span class="copy-feedback" data-copy-feedback role="status"></span>
-</details>
-<details><summary>参考解释 · 按需要查看</summary>
-<p>浏览器采集与展示/播放；服务端组织处理并返回；语言模型处理文本并提出文字回答或工具请求。直接文字输入省去了录音到转写的前段，朗读仍要合成声音并播放。</p>
-<p>确认拍照需要查看工具请求、执行结果，以及实际返回照片或视觉分析。无声音时，沿合成、发送、接收和播放检查，结合日志逐步缩小范围。</p>
-</details>
-</section>
-
-<section id="next">
-<h2 class="section-heading"><span class="section-no">→</span>下一步，亲手运行第一个程序</h2>
-<p><strong>M00.02 · 文件、目录与终端</strong>：认识文件位置和命令，运行第一段小程序。这一课尚未生成，你可以让讲课 AI 按既有大纲继续。</p>
-<div class="callout"><strong>给 AI 的续学说明</strong><p>“请按 Deskbot 课程大纲和 HTML 教材编写说明继续 M00.02。我是完全零基础，请先讲清文件、路径和终端，再给可运行的小实验。参考 M00.01 的页面结构；尚未学过的语法要解释。”</p></div>
-<div class="home-links"><a class="button" href="../index.html">返回课程目录</a><a class="button button-quiet" href="M00.01.md">查看原始讲稿</a></div>
-</section>
-<footer class="lesson-footer"><p>内容依据：Deskbot 语音源码与课程大纲；教学形式参考 AI Lab 的分步演示、源码联动和折叠自测。</p><p>本课仅建立分工认识。真实运行与独立开发，会在后续课程逐步练习和验收。<a href="../ai-authoring-guide.md">教材编写说明</a> · <a href="../source-map.md">源码覆盖地图</a></p></footer>
-</main>
-</div>
-<script id="source-data" type="application/json">{"asr":{"file":"src/voice_server/session.py","start":264,"lines":["            text = transcript if transcript is not None else await wait_for(","                self._asr.transcribe(pcm, 16_000), self._asr_timeout_s","            )","            metrics[\"asr_ms\"] = 0.0 if transcript is not None else self._turn_elapsed_ms()"],"title":"已有文字就直接使用","explain":"有 transcript 时沿用文字；否则调用语音识别。transcript 是本次已经收到的文字。这里先理解分工，条件表达式和 await 将在后续课逐行学习。","highlight":[0,1]},"backend":{"file":"src/voice_server/dialogue.py","start":37,"lines":["class LLMDialogueBackend:","    def __init__(self, llm: LLMProvider) -> None:","        self._llm = llm","","    def stream(self, request: TurnRequest) -> AsyncIterator[str]:","        return self._llm.stream(request.messages)"],"title":"把消息交给语言模型","explain":"request.messages 是这次准备好的消息；LLMDialogueBackend 把它交给模型组件，并返回逐块产生的文字。这说明模型只是应用中的一个组件。","highlight":[4,5]},"tool":{"file":"src/voice_server/camera_dialogue.py","start":343,"lines":["                for call in calls:","                    result = await self._execute(client, request, call, available_names, device_tool_names)","                    summary = json.loads(result)","                    if summary.get(\"success\") is False:","                        reason = summary.get(\"error\") or summary.get(\"tool_message\") or \"设备未确认操作成功\"","                        yield f\"设备操作失败：{reason}\"","                        return","                    messages.append({\"role\": \"tool\", \"tool_call_id\": call.id, \"content\": result})"],"title":"程序执行工具并记录结果","explain":"_execute 是程序真正执行工具的位置。成功结果会作为 role=tool 消息放回上下文；当前失败分支会先说明失败并结束，这是后续受控纠错实践的起点。","highlight":[1,3,7]}}</script>
+  // 2. Agent 工具循环 vs 幻觉对比沙盒
+  DeskCourse.tracePlayer("#sim-agent", {
+    graph: {
+      width: 720,
+      height: 115,
+      nodes: [
+        { id: "user",   label: "用户提问",      sub: "查询设备状态", x: 80,  y: 58, w: 120, h: 50 },
+        { id: "python", label: "Python 宿主后端", sub: "camera_dialogue", x: 275, y: 58, w: 145, h: 50 },
+        { id: "llm",    label: "LLM 大模型",     sub: "决策与组织语言", x: 475, y: 58, w: 135, h: 50 },
+        { id: "mcp",    label: "MCP 设备工具",   sub: "真实传感器/相机", x: 650, y: 58, w: 120, h: 50 }
+      ],
+      edges: [
+        { id: "u2p", from: "user",   to: "python", label: "TurnRequest" },
+        { id: "p2l", from: "python", to: "llm",    label: "messages+tools", curve: -24 },
+        { id: "l2p", from: "llm",    to: "python", label: "ToolCall 申请",   curve: 24 },
+        { id: "p2m", from: "python", to: "mcp",    label: "JSON-RPC",       curve: -24 },
+        { id: "m2p", from: "mcp",    to: "python", label: "真实回执",       curve: 24 }
+      ]
+    },
+    scenarios: [
+      {
+        label: "✅ 真实 Agent 工具闭环（有据可查）",
+        summary: "用户问“现在设备姿态是什么？”——观察模型怎样提出申请、Python 怎样跑工具并把真实读数喂回模型：",
+        steps: [
+          {
+            node: "python", edge: "u2p", role: "server", badge: "STEP 1 · 准备工具清单", state: "Round 1",
+            title: "Python 后端把问题与当前可用工具说明书一起发给 LLM",
+            explain: "除了历史消息，程序还会附上当前已连接设备支持的 MCP 工具名称与参数格式（Schema）。",
+            data: 'tools = [{"name": "device_self_sensor_get_imu", "parameters": {"type": "object"}}]',
+            lang: "python", source: "camera_dialogue.py::stream (L210-225)"
+          },
+          {
+            node: "llm", edge: "l2p", role: "model", badge: "STEP 2 · 模型提出调用申请", state: "Round 1",
+            title: "LLM 发现自己不知道实时传感器读数，返回 ToolCall 请求",
+            explain: "注意：此时设备还没有被读取！模型只是吐出了一个结构化请求，请宿主程序帮忙查一下。",
+            data: 'ToolCall(id="call_01", name="device_self_sensor_get_imu", arguments="{}")',
+            lang: "python", source: "providers/openai_compatible.py::stream_with_tools"
+          },
+          {
+            node: "mcp", edge: "p2m", role: "tool", badge: "STEP 3 · 程序真正执行工具", state: "Executing",
+            title: "Python 校验工具名合法后，通过 MCP 读取设备并拿到真实 JSON",
+            explain: "_execute 方法向已连接设备发送 JSON-RPC tools/call，并把耗时与成功状态记入 diagnostics 账本。",
+            data: '{"success": true, "pitch": 1.2, "roll": -0.4, "stationary": true}',
+            lang: "json", source: "camera_dialogue.py::_execute -> device_mcp.py"
+          },
+          {
+            node: "python", edge: "m2p", role: "server", badge: "STEP 4 · 回执追加进 messages", state: "Round 2",
+            title: "Python 把真实工具输出包成 role='tool' 消息塞回上下文，再次调用 LLM",
+            explain: "这一步是 Agent 循环的灵魂：让模型亲眼看到刚才那次调用的真实返回数据。",
+            data: '{"role": "tool", "tool_call_id": "call_01", "content": "{\\"success\\": true, \\"pitch\\": 1.2...}"}',
+            lang: "json", source: "camera_dialogue.py::stream (L350)"
+          },
+          {
+            node: "llm", edge: "p2l", role: "model", badge: "STEP 5 · 据实生成最终语音回复", state: "Done",
+            title: "LLM 不再请求工具，基于真实读数生成简洁口语交给 TTS",
+            explain: "本轮不再产生新的 ToolCall，循环干净结束，文字流向语音合成。",
+            data: '"设备当前处于静止水平状态，俯仰角约 1.2 度。"',
+            lang: "json", source: "camera_dialogue.py::stream (L329-333)"
+          }
+        ]
+      },
+      {
+        label: "💥 反例：如果没接工具却瞎编（幻觉事故）",
+        summary: "当设备 MCP 未连接或模型脱离工具回执胡说时，为什么靠日志一查就能抓包：",
+        steps: [
+          {
+            node: "python", edge: "u2p", role: "server", badge: "无可用工具", state: "tools = []",
+            title: "设备尚未连接，本轮可用工具列表为空",
+            explain: "camera_dialogue.py 检测到没有可用工具时，会在系统提示里明确警告模型不准假装操作了设备。",
+            data: 'instructions = "当前对话没有可用的设备工具。不要声称已操作摄像头、底盘或传感器..."',
+            lang: "python", source: "camera_dialogue.py (L233-236)"
+          },
+          {
+            node: "llm", edge: "l2p", role: "error", badge: "幻觉风险点", state: "No Tool Receipt", error: true,
+            title: "假如劣质提示或模型仍然嘴快说“已帮你拍好照片”",
+            explain: "只要我们查看 diagnostics['tool_calls']，发现列表为空或 status='error'，就能 100% 判定这是一次无据幻觉（在 M05.02 评测集中，‘动作陈述有据率’专门抓这类问题！）。",
+            data: 'diagnostics["tool_calls"] == []  # 没有任何真实执行证据！',
+            lang: "python", source: "improvement-roadmap.md · 动作陈述有据率指标"
+          }
+        ]
+      }
+    ]
+  });
+});
+</script>
 </body>
 </html>

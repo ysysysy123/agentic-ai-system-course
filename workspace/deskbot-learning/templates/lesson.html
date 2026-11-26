@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dk:lesson" content="{{LESSON_ID}}">
+<meta name="dk:module" content="{{MODULE_ID}}">
+<meta name="dk:home" content="../index.html">
+<meta name="dk:date" content="{{DATE}}">
+<title>{{LESSON_ID}} {{TITLE}} · Deskbot 学习室</title>
+<link rel="stylesheet" href="../assets/deskbot-course.css">
+</head>
+<body>
+<!--
+  ================= Deskbot 学习室 · 标准交互式课程页模板 =================
+  编写前必读：../HTML_DESIGN_RULES.md 与 ../syllabus.md 对应课号条目。
+  铁律：
+  1. 一课只聚焦 1 个核心可触摸收获（15–25 分钟读完 + 本地小实验）。
+  2. 凡本课首次出现的 Python / SQL / Async / 正则 / JS 语法，先用 .syntax-bridge 拆透再看源码。
+  3. 真实项目代码块务必使用 `python3 scripts/course_tool.py snippet <相对路径> <起行> <止行>` 提取，禁止凭记忆手敲行号！
+  4. 写完删除全部 TODO-LESSON 占位符，并运行 `python3 scripts/course_tool.py check lessons/{{LESSON_ID}}.html` 校验零错误！
+  =========================================================================
+-->
+<div class="dk-layout">
+  <!-- 左侧目录由 deskbot-course.js 自动扫描正文 h2/h3 生成并随滚动高亮 -->
+  <nav id="dk-toc" aria-label="本课目录"></nav>
+
+  <main class="dk-main">
+    <header class="dk-hero">
+      <div class="crumbs">
+        <a href="../index.html">📚 38课学习地图</a> /
+        <a href="../index.html#{{MODULE_ID}}">{{MODULE_TITLE}}</a> /
+        <span>{{LESSON_ID}}</span>
+      </div>
+      <p class="eyebrow">{{LESSON_ID}} · {{TIER_LABEL}}</p>
+      <h1>{{TITLE}}</h1>
+      <p class="subtitle">TODO-LESSON 一句话副标题：用具体问题点破这节课在 Deskbot 中解决什么痛点</p>
+      <div class="chips">
+        <span class="chip {{TIER_CLASS}}">{{TIER_BADGE}}</span>
+        <span class="chip sim">🧪 本地离线模拟可跑</span>
+        <span class="chip">⏱ 约 20 分钟</span>
+        <span class="chip">📍 TODO-LESSON 主要源码文件</span>
+      </div>
+    </header>
+
+    <div class="win">
+      <div class="icon">🎯</div>
+      <div>
+        <h4>本课唯一核心收获</h4>
+        <p>TODO-LESSON 学完这一课，你能独立做到 ______（写一个可观察、可验证的具体动作，不写“理解XX概念”这种空话）。</p>
+      </div>
+    </div>
+
+    <div class="prereq">
+      <b>前置检查：</b>
+      <span class="known">✓ 已掌握：TODO-LESSON（指明前序课号）</span> ·
+      <span class="gap">△ 本课从零拆解：TODO-LESSON（列出本课首次出现的新语法/术语，绝不假设已懂）</span>
+    </div>
+
+    <!-- ========== §01 问题与直觉 ========== -->
+    <section>
+      <h2><span class="num">01</span>问题引入：为什么 Deskbot 需要这一环？</h2>
+      <p>TODO-LESSON 从一个具体的用户说话场景或工程痛点切入，不超过 3 段。</p>
+      <aside class="sidenote">
+        <strong>为什么先看直觉？</strong> TODO-LESSON 宽屏下自动浮在右侧的补充边注，窄屏自动折叠为精致侧栏条。不需要可删。
+      </aside>
+      <div class="callout intuition">
+        <span class="ct">生活类比 / 一句话直觉</span>
+        <p>TODO-LESSON 把抽象技术概念映射成日常经验。</p>
+      </div>
+    </section>
+
+    <!-- ========== §02 零基础语法与概念拆桥（无新语法的综合复习课可精简） ========== -->
+    <section>
+      <h2><span class="num">02</span>零基础拆桥：先把新语法掰开揉碎</h2>
+      <p>TODO-LESSON 进入真实源码前，先用 5–8 行完全脱离项目复杂度的极简小例子把新语法讲透：</p>
+
+      <div class="syntax-bridge">
+        <div class="sb-col">
+          <span class="sb-tag">1 · 极简日常小例子（零前置）</span>
+          <pre data-file="最小语法演示"><code class="language-python"># TODO-LESSON 5-8行纯标准库最小例子
+msg = {"role": "user", "content": "你好"}
+print(msg.get("role"))</code></pre>
+          <p class="small">TODO-LESSON 逐词解释上面每一行符号的含义（例如花括号 <code>{}</code>、冒号 <code>:</code>、<code>.get()</code> 为什么比 <code>[]</code> 安全）。</p>
+        </div>
+        <div class="sb-col project">
+          <span class="sb-tag">2 · 在 Deskbot 源码里的真实模样</span>
+          <pre data-file="Deskbot 对应写法"><code class="language-python"># TODO-LESSON 对应项目里的写法片段
+summary = result.get("structuredContent") or {}</code></pre>
+          <p class="small">TODO-LESSON 说明项目里为什么要这样写，如果写错会发生什么。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== §03 可交互状态/链路沙盒（至少选一种：tracePlayer / dk-stepper+flowGraph / playground / dk-tabs） ========== -->
+    <section>
+      <h2><span class="num">03</span>动手推演：一步步看清数据与状态变化</h2>
+      <p>点击下方场景按钮与「下一步」（或按键盘 <kbd>←</kbd> <kbd>→</kbd>），观察正常路径与边界/故障路径的差别：</p>
+
+      <div id="sim-main"></div>
+
+      <!-- 若需对比「原版缺陷 vs PR 重构后」，可使用 .dk-tabs：
+      <div class="dk-tabs">
+        <div class="tab" data-label="❌ 原版痛点">...</div>
+        <div class="tab" data-label="✅ 重构方案">...</div>
+      </div>
+      -->
+    </section>
+
+    <!-- ========== §04 对照 Deskbot 真实源码（双栏点击聚光灯） ========== -->
+    <section>
+      <h2><span class="num">04</span>真实源码走读：逐段定位关键逻辑</h2>
+      <p>左侧直接提取自当前本机 <code>Deskbot/server/voice</code> 真实文件；<strong>点击右侧编号卡片</strong>，左侧会自动聚光灯高亮并滚动到对应代码行：</p>
+
+      <div class="code-walk" data-dim>
+        <!-- 请运行: python3 scripts/course_tool.py snippet <相对VOICE_ROOT路径> <起行> <止行> 粘贴替换下方 pre -->
+<pre data-file="src/voice_server/TODO-LESSON.py" data-start="1"><code class="language-python"># TODO-LESSON 用 course_tool.py snippet 提取真实代码</code></pre>
+        <ol class="walk">
+          <li data-lines="1-3"><strong>入口与输入参数</strong>：TODO-LESSON 说明谁调用它、传入什么类型。</li>
+          <li data-lines="4-8"><strong>核心状态变化 / 分支判断</strong>：TODO-LESSON 说明为什么这样判断，边界条件是什么。</li>
+        </ol>
+      </div>
+
+      <div class="callout warn">
+        <span class="ct">真实环境与离线模拟的边界提醒</span>
+        <p>TODO-LESSON 明确区分：哪些行为已由本地单测证实，哪些表现（如真实 ASR 口音、扬声器播放延迟、底盘物理位移）需在浏览器/实机单独验收。</p>
+      </div>
+    </section>
+
+    <!-- ========== §05 本地可运行小实验 / PR 实战任务 ========== -->
+    <section>
+      <h2><span class="num">05</span>本地动手实验：亲手跑通并改一处验证</h2>
+      <p>本课配套离线实验位于 <code>workspace/deskbot-learning/exercises/{{LESSON_ID}}/</code>（不消耗付费 API、不改动正在运行的服务）：</p>
+
+      <div class="terminal-lab">
+        <div class="term-head">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span>工作目录：/mnt/study/github/agentic-ai-system-course</span>
+        </div>
+        <div class="term-body">
+          <div class="cmd-row">
+            <span class="cmd-text">python3 workspace/deskbot-learning/exercises/{{LESSON_ID}}/task.py</span>
+            <button class="copy-cmd" type="button">复制命令</button>
+          </div>
+          <div class="term-out">TODO-LESSON 粘贴实际运行 task.py 核对过的真实预期输出</div>
+        </div>
+      </div>
+
+      <div class="callout lab">
+        <span class="ct">动手小挑战（先预测，再运行！）</span>
+        <ol>
+          <li>TODO-LESSON 要求学生修改 <code>task.py</code> 中的某一行或补全一个小函数，先在脑中预测输出再运行核对。</li>
+        </ol>
+      </div>
+
+      <details class="reveal hint">
+        <summary>卡住了？点开查看分层提示（先别急着看完整答案）</summary>
+        <p><strong>提示 1：</strong>TODO-LESSON 只点拨方向，不直接贴代码。</p>
+        <p><strong>提示 2：</strong>TODO-LESSON 指出具体关注哪个变量或哪一行报错信息。</p>
+      </details>
+
+      <details class="reveal deep">
+        <summary>实验参考解法与逐行解析（自己试过后再展开核对）</summary>
+        <pre data-file="exercises/{{LESSON_ID}}/solution.py"><code class="language-python"># TODO-LESSON 完整可运行的参考解法代码</code></pre>
+      </details>
+    </section>
+
+    <!-- ========== §06 小结与深圳面试表达模板 ========== -->
+    <section>
+      <h2><span class="num">06</span>本课浓缩与面试表达</h2>
+      <div class="callout summary">
+        <span class="ct">三句话记住本课精髓</span>
+        <ul>
+          <li>TODO-LESSON 要点 1</li>
+          <li>TODO-LESSON 要点 2</li>
+          <li>TODO-LESSON 要点 3</li>
+        </ul>
+      </div>
+
+      <div class="callout interview">
+        <span class="ct">深圳 Agent 岗 · 30 秒面试回答模板</span>
+        <p>「TODO-LESSON 如果面试官问到本课涉及的设计或故障，用自己的工程语言怎样干脆利落地回答（包含架构原因 + 代码落地 + 边界权衡）。」</p>
+      </div>
+    </section>
+
+    <!-- ========== §07 可选自测与独立讲回验收 ========== -->
+    <section>
+      <h2><span class="num">07</span>自测与通关讲回验收</h2>
+
+      <details class="reveal q">
+        <summary>可选快测：3 道直觉判断题</summary>
+        <form class="dk-quiz">
+          <fieldset data-name="q1" data-answer="b" data-explain="TODO-LESSON 解释为什么选 B 以及其他选项错在哪里。">
+            <legend>1. TODO-LESSON 题干 1？</legend>
+            <label class="q-opt"><input type="radio" name="q1" value="a"> A. TODO-LESSON</label>
+            <label class="q-opt"><input type="radio" name="q1" value="b"> B. TODO-LESSON</label>
+            <label class="q-opt"><input type="radio" name="q1" value="c"> C. TODO-LESSON</label>
+          </fieldset>
+          <button class="dk-btn primary" type="submit">核对判断与解析</button>
+        </form>
+      </details>
+
+      <details class="reveal q">
+        <summary>🎤 面试深挖追问：TODO-LESSON 一道有深度的为什么/如果出故障题</summary>
+        <p>TODO-LESSON 参考回答思路与代码依据。</p>
+      </details>
+
+      <div class="teachback-card" data-teachback>
+        <h3>📝 通关讲回草稿箱（合上源码，用你自己的大白话写下来）</h3>
+        <p class="small muted">读完页面或点完动画不算通关；把下面两个核心问题用自己的话写出来，点击按钮一键复制发给 AI 老师验收，通过后即可点亮 <code>progress.md</code>。</p>
+        <label class="tb-field">
+          1. TODO-LESSON 本课核心数据流/机制讲回问题 1
+          <textarea data-field="q1" placeholder="用自己的话写，哪怕觉得哪里卡壳也可以直接写“这里还不确定”…"></textarea>
+        </label>
+        <label class="tb-field">
+          2. TODO-LESSON 本课实验观察或故障定位讲回问题 2
+          <textarea data-field="q2" placeholder="记录你改完代码后看到的现象和原因…"></textarea>
+        </label>
+        <div class="tb-actions">
+          <button class="dk-btn primary" type="button" data-copy-teachback>📋 一键复制我的回答发给 AI 老师验收</button>
+          <span class="tb-status">草稿会自动保存在当前浏览器本地。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 上下课导航 -->
+    <nav class="dk-nav" aria-label="课程前后导航">
+      {{PREV_NAV}}
+      {{NEXT_NAV}}
+    </nav>
+
+    <div class="ask-ai">
+      💬 随时向陪读 AI 提问：<code>这行语法没看懂</code> · <code>再给个更简单的例子</code> · <code>带我跑实验</code> · <code>验收本课进入下一课</code>
+    </div>
+
+    <footer class="dk-footer">
+      <span>Deskbot 学习室 · {{LESSON_ID}} · 核对日期 {{DATE}}</span>
+      <span><a href="../syllabus.md">课程大纲</a> · <a href="../source-map.md">源码地图</a> · <a href="../improvement-roadmap.md">5大PR路线</a></span>
+    </footer>
+  </main>
+
+  <aside class="dk-margin" aria-hidden="true"></aside>
+</div>
+
+<script src="../assets/deskbot-course.js"></script>
+<script>
+DeskCourse.ready(() => {
+  // TODO-LESSON 初始化 #sim-main 交互组件（tracePlayer / flowGraph / playground 任选最贴合本课的一种）
+  DeskCourse.tracePlayer("#sim-main", {
+    scenarios: [
+      {
+        label: "正常路径",
+        summary: "TODO-LESSON 场景一句话说明",
+        steps: [
+          { title: "步骤 1", role: "client", badge: "CLIENT", state: "IDLE", explain: "TODO-LESSON", data: '{"example": true}', lang: "json", source: "TODO-LESSON" }
+        ]
+      }
+    ]
+  });
+});
+</script>
+</body>
+</html>
